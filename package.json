@@ -1,0 +1,38 @@
+{
+        "name": "vortexstream",
+        "version": "1.0.0",
+        "description": "VortexStream a platform where content (videos, likes, comments, subscriptions) is continuously flowing and dynamically engaging users — like a digital vortex pulling users into a rich ecosystem of media.",
+        "main": "index.js",
+        "type": "module",
+        "scripts": {
+                "dev": "nodemon src/index.js",
+                "start": "node src/index.js",
+                "test": "echo \"Error: no test specified\" && exit 1"
+        },
+        "repository": {
+                "type": "git",
+                "url": "git+https://github.com/KalraH/VortexStream.git"
+        },
+        "keywords": [
+                "JavaScript",
+                "Node.js",
+                "Express.js",
+                "MongoDB",
+                "Mongoose",
+                "Nodemon",
+                "dotenv",
+                "bcryptjs",
+                "cors",
+                "JWT"
+        ],
+        "author": "Hariom Kalra",
+        "license": "ISC",
+        "bugs": {
+                "url": "https://github.com/KalraH/VortexStream/issues"
+        },
+        "homepage": "https://github.com/KalraH/VortexStream#readme",
+        "devDependencies": {
+                "nodemon": "^3.1.10",
+                "prettier": "^3.6.2"
+        }
+}
