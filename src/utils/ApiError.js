@@ -2,10 +2,10 @@
  * @file utils/ApiError.js
  * @description Custom error handler for API responses.
  *
- * @param {number} statusCode - HTTP status code.
- * @param {string} message - Error message.
- * @param {Array} errors - Array of error details.
- * @param {string} stack - Stack trace of the error.
+ * @param {number} 	statusCode - HTTP status code.
+ * @param {string} 	message - Error message.
+ * @param {Array} 	errors - Array of error details.
+ * @param {string} 	stack - Stack trace of the error.
  */
 class ApiError extends Error {
         constructor(

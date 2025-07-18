@@ -2,6 +2,7 @@ import JWT from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
 import mongoose, { Schema } from "mongoose";
+import { HTTP_STATUS } from "../constants.js";
 
 const userSchema = new Schema(
         {
@@ -23,6 +24,7 @@ const userSchema = new Schema(
                 password: {
                         type: String,
                         required: [true, "Password is required"],
+                        select: false,
                         minlength: [
                                 6,
                                 "Password must be at least 6 characters long",
@@ -48,6 +50,7 @@ const userSchema = new Schema(
                 ],
                 refereshToken: {
                         type: String,
+                        select: false,
                 },
         },
         {
@@ -72,7 +75,7 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
                 return await bcryptjs.compare(candidatePassword, this.password);
         } catch (error) {
                 throw new ApiError(
-                        500,
+                        HTTP_STATUS.INTERNAL_SERVER_ERROR,
                         "USER MODEL, Password comparison failed",
                         [error.message],
                         error.stack
@@ -90,11 +93,11 @@ userSchema.methods.generateAccessToken = function () {
                                 fullName: this.fullName,
                         },
                         process.env.ACCESS_TOKEN_SECRET,
-                        { expiresIn: ACCESS_TOKEN__EXPIRATION }
+                        { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION }
                 );
         } catch (error) {
                 throw new ApiError(
-                        500,
+                        HTTP_STATUS.INTERNAL_SERVER_ERROR,
                         "USER MODEL, Access token generation failed",
                         [error.message],
                         error.stack
@@ -107,11 +110,11 @@ userSchema.methods.generateRefreshToken = function () {
                 return JWT.sign(
                         { _id: this._id },
                         process.env.REFRESH_TOKEN_SECRET,
-                        { expiresIn: REFRESH_TOKEN__EXPIRATION }
+                        { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION }
                 );
         } catch (error) {
                 throw new ApiError(
-                        500,
+                        HTTP_STATUS.INTERNAL_SERVER_ERROR,
                         "USER MODEL, Access token generation failed",
                         [error.message],
                         error.stack

@@ -1,4 +1,5 @@
 import multer from "multer";
+import { HTTP_STATUS } from "../constants.js";
 
 const storage = multer.diskStorage({
         destination: (req, file, cb) => {
@@ -26,7 +27,7 @@ export const upload = multer({
                 }
                 cb(
                         new ApiError(
-                                400,
+                                HTTP_STATUS.BAD_REQUEST,
                                 "MULTER, Only images are allowed",
                                 [error.message],
                                 error.stack
