@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 import { CONSTANTS } from "../constants.js";
 
+/**
+ * Connects to the MongoDB database using Mongoose.
+ *
+ * @returns {Promise<void>} - A promise that resolves when the connection is established.
+ */
 const connectToDatabase = async () => {
         try {
                 const connectionInstance = await mongoose.connect(

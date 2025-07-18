@@ -1,6 +1,6 @@
 import cors from "cors";
 import express from "express";
-import { CONSTANTS } from "./constants";
+import { CONSTANTS } from "./constants.js";
 import cookieParser from "cookie-parser";
 
 // Initialize the Express application
