@@ -1,8 +1,9 @@
-import express from "express";
-import cookieParser from "cookie-parser";
 import cors from "cors";
+import express from "express";
 import { CONSTANTS } from "./constants";
+import cookieParser from "cookie-parser";
 
+// Initialize the Express application
 const app = express();
 
 /* Middleware to parse JSON and URL-encoded data */
@@ -10,7 +11,7 @@ app.use(
         cors({
                 origin:
                         process.env.CORS_ORIGIN ||
-                        "http://localhost:`${process.env.PORT || 5000}`,",
+                        `http://localhost:${process.env.PORT || 5000}`,
                 credentials: true,
         })
 );
