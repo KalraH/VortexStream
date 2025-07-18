@@ -9,11 +9,7 @@ import { CONSTANTS } from "../constants.js";
 const connectToDatabase = async () => {
         try {
                 const connectionInstance = await mongoose.connect(
-                        `${process.env.MONGO_DB_URI}/${CONSTANTS.DB_NAME}`,
-                        {
-                                useNewUrlParser: true,
-                                useUnifiedTopology: true,
-                        }
+                        `${process.env.MONGO_DB_URI}/${CONSTANTS.DB_NAME}`
                 );
                 console.log(
                         "DB CONFIG,",

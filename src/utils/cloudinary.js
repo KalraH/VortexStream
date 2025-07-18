@@ -27,7 +27,7 @@ const uploadOnCloud = async (filePath) => {
                 // console.log(uploadResult);
                 // console.log("CLOUDINARY,", "TESTING LOGGING END ----------------------------------------------------------------");
 
-		// Clean up the file if upload fails
+                // Clean up the file if upload fails
                 fs.unlinkSync(filePath);
 
                 return uploadResult.url;
