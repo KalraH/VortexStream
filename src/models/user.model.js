@@ -48,7 +48,7 @@ const userSchema = new Schema(
                                 ref: "Video",
                         },
                 ],
-                refereshToken: {
+                refreshToken: {
                         type: String,
                         select: false,
                 },
@@ -120,6 +120,14 @@ userSchema.methods.generateRefreshToken = function () {
                         error.stack
                 );
         }
+};
+
+userSchema.methods.toJSON = function () {
+        const user = this.toObject();
+        delete user.password;
+        delete user.refreshToken;
+        delete user.__v;
+        return user;
 };
 
 export const User = mongoose.model("User", userSchema);

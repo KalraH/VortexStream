@@ -1,10 +1,17 @@
+import jwt from "jsonwebtoken";
 import ApiError from "../utils/ApiError.js";
-import { HTTP_STATUS } from "../constants.js";
+import { HTTP_STATUS, COOKIE_OPTIONS } from "../constants.js";
 import { User } from "../models/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 
+/**
+ * Generate Refresh and Access Tokens.
+ * @param 	{Object} user - User's Instance from DB.
+ *
+ * @returns 	{Object} The Refresh and Access Tokens created.
+ */
 const generateAccessRefreshToken = async (user) => {
         try {
                 const accessToken = user.generateAccessToken();
@@ -23,7 +30,7 @@ const generateAccessRefreshToken = async (user) => {
                         );
                 }
 
-                user.refereshToken = refreshToken;
+                user.refreshToken = refreshToken;
                 await user.save({ validateBeforeSave: false });
 
                 return { accessToken, refreshToken };
@@ -110,7 +117,7 @@ const registerUser = asyncHandler(async (req, res) => {
                 });
 
                 const createdUser = await User.findById(newUser._id).select(
-                        "-password -refereshToken -__v"
+                        "-password -refreshToken -__v"
                 );
 
                 if (!createdUser) {
@@ -157,7 +164,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
                 const userInstance = await User.findOne({
                         $or: [{ email }, { userName }],
-                }).select("+password +refereshToken");
+                }).select("+password +refreshToken");
 
                 if (
                         !userInstance ||
@@ -177,26 +184,15 @@ const loginUser = asyncHandler(async (req, res) => {
                 // console.log(user);
                 // console.log("USER CONTROLLER,", "TESTING LOGGING END ----------------------------------------------------------------");
 
-                const options = {
-                        expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
-                        httpOnly: true,
-                        secure: true,
-                        signed: true, // Use signed cookies for security
-                };
-
                 res.status(HTTP_STATUS.OK)
-                        .cookie("refreshToken", refreshToken, options)
-                        .cookie("accessToken", accessToken, options)
+                        .cookie("accessToken", accessToken, COOKIE_OPTIONS)
+                        .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
                         .json(
                                 new ApiResponse(
                                         HTTP_STATUS.ACCEPTED,
                                         `USER CONTROLLER, LOGIN, User {${userInstance._id}: ${userInstance.userName}} logged in successfully.`,
                                         {
-                                                user: userInstance
-                                                        .select(
-                                                                "-password -refreshToken"
-                                                        )
-                                                        .toObject(),
+                                                user: userInstance,
                                                 accessToken,
                                                 refreshToken,
                                         }
@@ -219,16 +215,9 @@ const logoutUser = asyncHandler(async (req, res) => {
                         { new: true }
                 );
 
-                const options = {
-                        expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
-                        httpOnly: true,
-                        secure: true,
-                        signed: true,
-                };
-
                 res.status(HTTP_STATUS.OK)
-                        .clearCookie("refreshToken", options)
-                        .clearCookie("accessToken", options)
+                        .clearCookie("accessToken", COOKIE_OPTIONS)
+                        .clearCookie("refreshToken", COOKIE_OPTIONS)
                         .json(
                                 new ApiResponse(
                                         HTTP_STATUS.NO_CONTENT,
@@ -244,4 +233,61 @@ const logoutUser = asyncHandler(async (req, res) => {
         }
 });
 
-export { registerUser, loginUser, logoutUser };
+const refreshAccessToken = asyncHandler(async (req, res) => {
+        try {
+                const token = req.cookies.refreshToken || req.body.refreshToken;
+                if (!token) {
+                        throw new ApiError(
+                                HTTP_STATUS.UNAUTHORIZED,
+                                "USER CONTROLLER, REFACC TOKEN, Token not provided."
+                        );
+                }
+
+                const decodedToken = jwt.verify(
+                        token,
+                        process.env.REFRESH_TOKEN_SECRET
+                );
+
+                const userInstance = await User.findById(
+                        decodedToken._id
+                ).select("+refreshToken");
+                if (!userInstance) {
+                        throw new ApiError(
+                                HTTP_STATUS.UNAUTHORIZED,
+                                "USER CONTROLLER, REFACC TOKEN, Invalid token provided."
+                        );
+                }
+
+                if (token !== userInstance.refreshToken) {
+                        throw new ApiError(
+                                HTTP_STATUS.UNAUTHORIZED,
+                                "USER CONTROLLER, REFACC TOKEN, Refresh Token is Expired or Invalid."
+                        );
+                }
+
+                const { accessToken, refreshToken } =
+                        await generateAccessRefreshToken(userInstance);
+
+                res.status(HTTP_STATUS.OK)
+                        .cookie("accessToken", accessToken, COOKIE_OPTIONS)
+                        .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+                        .json(
+                                new ApiResponse(
+                                        HTTP_STATUS.ACCEPTED,
+                                        `USER CONTROLLER, LOGIN, User {${userInstance._id}: ${userInstance.userName}} logged in successfully.`,
+                                        {
+                                                user: userInstance,
+                                                accessToken,
+                                                refreshToken,
+                                        }
+                                )
+                        );
+        } catch (error) {
+                throw new ApiError(
+                        HTTP_STATUS.UNAUTHORIZED,
+                        "USER CONTROLLER, REFACC TOKEN, Invalid token provided."
+                );
+        }
+});
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken };

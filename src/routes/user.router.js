@@ -5,6 +5,7 @@ import {
         loginUser,
         logoutUser,
         registerUser,
+        refreshAccessToken,
 } from "../controllers/user.controller.js";
 
 const router = Router();
@@ -27,5 +28,6 @@ router.route("/login").post(loginUser);
 
 // Secured Routes
 router.route("/logout").post(authMiddleware, logoutUser);
+router.route("/refresh-token").post(refreshAccessToken);
 
 export default router;
