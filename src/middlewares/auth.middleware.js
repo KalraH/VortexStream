@@ -37,7 +37,9 @@ export const authMiddleware = asyncHandler(async (req, _, next) => {
                 throw new ApiError(
                         error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
                         error.message ||
-                                "AUTH MIDDLEWARE, An error occurred while processing your request."
+                                "AUTH MIDDLEWARE, An error occurred while processing your request.",
+                        [error.message],
+                        error.stack
                 );
         }
 });

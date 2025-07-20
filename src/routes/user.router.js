@@ -5,8 +5,14 @@ import {
         loginUser,
         logoutUser,
         registerUser,
+        updateAvatar,
+        getCurrentUser,
+        updateCoverImage,
         refreshAccessToken,
+        updateAccountDetails,
+        changeCurrentPassword,
 } from "../controllers/user.controller.js";
+import multer from "multer";
 
 const router = Router();
 
@@ -27,7 +33,22 @@ router.route("/register").post(
 router.route("/login").post(loginUser);
 
 // Secured Routes
-router.route("/logout").post(authMiddleware, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
+router.route("/logout").post(authMiddleware, logoutUser);
+router.route("/change-pass").get(authMiddleware, getCurrentUser);
+router.route("/get-cur-user").post(authMiddleware, changeCurrentPassword);
+router.route("/update-user-data").post(authMiddleware, updateAccountDetails);
+
+router.route("/update-avatar").post(
+        upload.single("avatar"),
+        authMiddleware,
+        updateAvatar
+);
+
+router.route("/update-cover-img").post(
+        upload.single("coverImage"),
+        authMiddleware,
+        updateCoverImage
+);
 
 export default router;

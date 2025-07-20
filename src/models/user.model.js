@@ -76,7 +76,8 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
         } catch (error) {
                 throw new ApiError(
                         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                        "USER MODEL, Password comparison failed",
+                        error.message ||
+                                "USER MODEL, Password comparison failed",
                         [error.message],
                         error.stack
                 );
@@ -98,7 +99,8 @@ userSchema.methods.generateAccessToken = function () {
         } catch (error) {
                 throw new ApiError(
                         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                        "USER MODEL, Access token generation failed",
+                        error.message ||
+                                "USER MODEL, Access token generation failed",
                         [error.message],
                         error.stack
                 );
@@ -115,7 +117,8 @@ userSchema.methods.generateRefreshToken = function () {
         } catch (error) {
                 throw new ApiError(
                         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                        "USER MODEL, Access token generation failed",
+                        error.message ||
+                                "USER MODEL, Access token generation failed",
                         [error.message],
                         error.stack
                 );

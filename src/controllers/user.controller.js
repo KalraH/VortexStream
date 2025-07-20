@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import ApiError from "../utils/ApiError.js";
-import { HTTP_STATUS, COOKIE_OPTIONS } from "../constants.js";
 import { User } from "../models/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import uploadOnCloudinary from "../utils/cloudinary.js";
+import { HTTP_STATUS, COOKIE_OPTIONS } from "../constants.js";
+import { uploadOnCloud, deleteFromCloud } from "../utils/cloudinary.js";
 
 /**
  * Generate Refresh and Access Tokens.
@@ -36,8 +36,9 @@ const generateAccessRefreshToken = async (user) => {
                 return { accessToken, refreshToken };
         } catch (error) {
                 throw new ApiError(
-                        HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                        "USER CONTROLLER, GEN ACC REF TOKEN, An error occurred while generating tokens.",
+                        error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
+                        error.message ||
+                                "USER CONTROLLER, GEN ACC REF TOKEN, CATCH, An error occurred while generating tokens.",
                         [error.message],
                         error.stack
                 );
@@ -96,9 +97,8 @@ const registerUser = asyncHandler(async (req, res) => {
                         );
                 }
 
-                const avatar = await uploadOnCloudinary(avatarLocalPath);
-                const coverImage =
-                        await uploadOnCloudinary(coverImageLocalPath);
+                const avatar = await uploadOnCloud(avatarLocalPath);
+                const coverImage = await uploadOnCloud(coverImageLocalPath);
 
                 if (!avatar) {
                         throw new ApiError(
@@ -116,7 +116,7 @@ const registerUser = asyncHandler(async (req, res) => {
                         coverImage: coverImage ? coverImage : null,
                 });
 
-                const createdUser = await User.findById(newUser._id).select(
+                const createdUser = await User.findById(newUser?._id).select(
                         "-password -refreshToken -__v"
                 );
 
@@ -146,7 +146,9 @@ const registerUser = asyncHandler(async (req, res) => {
                 throw new ApiError(
                         error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
                         error.message ||
-                                "USER CONTROLLER, REGISTER, An error occurred while registering the user."
+                                "USER CONTROLLER, REGISTER, CATCH, An error occurred while registering the user.",
+                        [error.message],
+                        error.stack
                 );
         }
 });
@@ -202,15 +204,17 @@ const loginUser = asyncHandler(async (req, res) => {
                 throw new ApiError(
                         error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
                         error.message ||
-                                "USER CONTROLLER, LOGIN, An error occurred while logging in the user."
+                                "USER CONTROLLER, LOGIN, CATCH, An error occurred while logging in the user.",
+                        [error.message],
+                        error.stack
                 );
         }
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
         try {
-                const user = await User.findByIdAndUpdate(
-                        req.user._id,
+                const userInstance = await User.findByIdAndUpdate(
+                        req.user?._id,
                         { $set: { refreshToken: null } },
                         { new: true }
                 );
@@ -221,21 +225,24 @@ const logoutUser = asyncHandler(async (req, res) => {
                         .json(
                                 new ApiResponse(
                                         HTTP_STATUS.NO_CONTENT,
-                                        `USER CONTROLLER, LOGOUT, User {${user._id}: ${user.userName}} logged out successfully.`
+                                        `USER CONTROLLER, LOGOUT, User {${userInstance._id}: ${userInstance.userName}} logged out successfully.`
                                 )
                         );
         } catch (error) {
                 throw new ApiError(
                         error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
                         error.message ||
-                                "USER CONTROLLER, LOGOUT, An error occurred while logging out the user."
+                                "USER CONTROLLER, LOGOUT, CATCH, An error occurred while logging out the user.",
+                        [error.message],
+                        error.stack
                 );
         }
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
         try {
-                const token = req.cookies.refreshToken || req.body.refreshToken;
+                const token =
+                        req.cookies?.refreshToken || req.body?.refreshToken;
                 if (!token) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
@@ -249,7 +256,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
                 );
 
                 const userInstance = await User.findById(
-                        decodedToken._id
+                        decodedToken?._id
                 ).select("+refreshToken");
                 if (!userInstance) {
                         throw new ApiError(
@@ -284,10 +291,254 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
                         );
         } catch (error) {
                 throw new ApiError(
-                        HTTP_STATUS.UNAUTHORIZED,
-                        "USER CONTROLLER, REFACC TOKEN, Invalid token provided."
+                        error.status || HTTP_STATUS.UNAUTHORIZED,
+                        error.message ||
+                                "USER CONTROLLER, REFACC TOKEN, CATCH, Invalid token provided.",
+                        [error.message],
+                        error.stack
                 );
         }
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+        try {
+                const { currPass, newPass } = req.body;
+
+                const userInstance = await User.findById(req.user?._id).select(
+                        "+password +refreshToken"
+                );
+                if (!userInstance) {
+                        throw new ApiError(
+                                HTTP_STATUS.UNAUTHORIZED,
+                                "USER CONTROLLER, CHANGE CURR PASS, User details INVALID."
+                        );
+                }
+
+                const isPassCorrect =
+                        await userInstance.comparePassword(currPass);
+                if (!isPassCorrect) {
+                        throw new ApiError(
+                                HTTP_STATUS.UNAUTHORIZED,
+                                "USER CONTROLLER, CHANGE CURR PASS, INVALID current password."
+                        );
+                }
+
+                userInstance.password = newPass;
+                await userInstance.save({ validateBeforeSave: false });
+
+                res.status(HTTP_STATUS.OK).json(
+                        new ApiResponse(
+                                HTTP_STATUS.OK,
+                                `USER CONTROLLER, CHANG CURR PASS, User ${userInstance.userName} password updated successfully.`
+                        )
+                );
+        } catch (error) {
+                throw new ApiError(
+                        error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
+                        error.message ||
+                                "USER CONTROLLER, CHANGE CURR PASS, CATCH, An error occurred while changing the user password.",
+                        [error.message],
+                        error.stack
+                );
+        }
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+        try {
+                res.status(HTTP_STATUS.OK).json(
+                        new ApiResponse(
+                                HTTP_STATUS.OK,
+                                `USER CONTROLLER, GET CURR USER, User ${req.user.userName} fetched successfully.`,
+                                req.user
+                        )
+                );
+        } catch (error) {
+                throw new ApiError(
+                        error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
+                        error.message ||
+                                "USER CONTROLLER, GET CURR USER, CATCH, An error occurred while fetching the user.",
+                        [error.message],
+                        error.stack
+                );
+        }
+});
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+        try {
+                const { email, fullName } = req.body;
+                if (!fullName && !email) {
+                        throw new ApiError(
+                                HTTP_STATUS.NO_CONTENT,
+                                "USER CONTROLLER, UPD USR DETAILS, updation fields required."
+                        );
+                }
+
+                const updatedUser = await User.findByIdAndUpdate(
+                        req.user?._id,
+                        { $set: { fullName, email } },
+                        { new: true }
+                );
+
+                res.status(HTTP_STATUS.OK).json(
+                        new ApiResponse(
+                                HTTP_STATUS.OK,
+                                `USER CONTROLLER, UPD USR DETAILS, User ${updatedUser.userName} updated successfully.`,
+                                updatedUser
+                        )
+                );
+        } catch (error) {
+                throw new ApiError(
+                        error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
+                        error.message ||
+                                "USER CONTROLLER, UPD USR DETAILS, CATCH, An error occurred while updating user details.",
+                        [error.message],
+                        error.stack
+                );
+        }
+});
+
+const updateAvatar = asyncHandler(async (req, res) => {
+        try {
+                const avatarLocalPath = req.file?.path || null;
+                if (!avatarLocalPath) {
+                        throw new ApiError(
+                                HTTP_STATUS.NO_CONTENT,
+                                "USER CONTROLLER, UPD AVATAR, updation field required."
+                        );
+                }
+
+                const avatar = await uploadOnCloud(avatarLocalPath);
+                if (!avatar) {
+                        throw new ApiError(
+                                HTTP_STATUS.BAD_REQUEST,
+                                "USER CONTROLLER, UPD AVATAR, Avatar did't get upload to Cloudinary."
+                        );
+                }
+
+                const userInstance = await User.findById(req.user?._id);
+                if (!userInstance) {
+                        throw new ApiError(
+                                HTTP_STATUS.UNAUTHORIZED,
+                                "USER CONTROLLER, UPD AVATAR, User details INVALID."
+                        );
+                }
+
+                const oldAvatarURL = userInstance.avatar;
+                if (!oldAvatarURL) {
+                        console.error(
+                                "USER CONTROLLER, UPD AVATAR,",
+                                "Old Avatar URL not found."
+                        );
+                }
+
+                // Updating the new Avatar Cloudinary URL into DB.
+                userInstance.avatar = avatar;
+                await userInstance.save({ validateBeforeSave: false });
+
+                // Deleting Old Avatar from Cloudinary.
+                await deleteFromCloud(oldAvatarURL);
+
+                const updatedUser = await User.findById(userInstance._id);
+                if (!updatedUser) {
+                        throw new ApiError(
+                                HTTP_STATUS.INTERNAL_SERVER_ERROR,
+                                "USER CONTROLLER, UPD AVATAR, Updated user not found."
+                        );
+                }
+
+                res.status(HTTP_STATUS.OK).json(
+                        new ApiResponse(
+                                HTTP_STATUS.OK,
+                                `USER CONTROLLER, UPD AVATAR, User ${updatedUser.userName} Avatar updated successfully.`,
+                                updatedUser
+                        )
+                );
+        } catch (error) {
+                throw new ApiError(
+                        error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
+                        error.message ||
+                                "USER CONTROLLER, UPD AVATAR, CATCH, An error occurred while updating Avatar.",
+                        [error.message],
+                        error.stack
+                );
+        }
+});
+
+const updateCoverImage = asyncHandler(async (req, res) => {
+        try {
+                const coverImgLocalPath = req.file?.path || null;
+                if (!coverImgLocalPath) {
+                        throw new ApiError(
+                                HTTP_STATUS.NO_CONTENT,
+                                "USER CONTROLLER, UPD COVER IMG, updation field required."
+                        );
+                }
+
+                const coverImg = await uploadOnCloud(coverImgLocalPath);
+                if (!coverImg) {
+                        throw new ApiError(
+                                HTTP_STATUS.BAD_REQUEST,
+                                "USER CONTROLLER, UPD COVER IMG, Cover Image did't get upload to Cloudinary."
+                        );
+                }
+
+                const userInstance = await User.findById(req.user?._id);
+                if (!userInstance) {
+                        throw new ApiError(
+                                HTTP_STATUS.UNAUTHORIZED,
+                                "USER CONTROLLER, UPD COVER IMG, User details INVALID."
+                        );
+                }
+
+                const oldCoverImgURL = userInstance.coverImage;
+                if (!oldCoverImgURL) {
+                        console.error(
+                                "USER CONTROLLER, UPD COVER IMG,",
+                                "Old Cover Image URL not found."
+                        );
+                }
+
+                // Updating the new Cover Image Cloudinary URL into DB.
+                userInstance.coverImage = coverImg;
+                await userInstance.save({ validateBeforeSave: false });
+
+                // Deleting Old Cover image from Cloudinary.
+                await deleteFromCloud(oldCoverImgURL);
+
+                const updatedUser = await User.findById(userInstance._id);
+                if (!updatedUser) {
+                        throw new ApiError(
+                                HTTP_STATUS.INTERNAL_SERVER_ERROR,
+                                "USER CONTROLLER, UPD COVER IMG, Updated user not found."
+                        );
+                }
+
+                res.status(HTTP_STATUS.OK).json(
+                        new ApiResponse(
+                                HTTP_STATUS.OK,
+                                `USER CONTROLLER, UPD COVER IMG, User ${updatedUser.userName} Cover Image updated successfully.`,
+                                updatedUser
+                        )
+                );
+        } catch (error) {
+                throw new ApiError(
+                        error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,
+                        error.message ||
+                                "USER CONTROLLER, UPD COVER IMG, CATCH, An error occurred while updating Cover image.",
+                        [error.message],
+                        error.stack
+                );
+        }
+});
+
+export {
+        loginUser,
+        logoutUser,
+        updateAvatar,
+        registerUser,
+        getCurrentUser,
+        updateCoverImage,
+        refreshAccessToken,
+        updateAccountDetails,
+        changeCurrentPassword,
+};
