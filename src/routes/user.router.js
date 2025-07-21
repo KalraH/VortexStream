@@ -9,13 +9,15 @@ import {
         getCurrentUser,
         updateCoverImage,
         refreshAccessToken,
+        getUserWatchHistory,
         updateAccountDetails,
         changeCurrentPassword,
+        getUserChannelProfile,
 } from "../controllers/user.controller.js";
-import multer from "multer";
 
 const router = Router();
 
+// Un-Secured Routes
 router.route("/register").post(
         upload.fields([
                 {
@@ -34,20 +36,25 @@ router.route("/login").post(loginUser);
 
 // Secured Routes
 router.route("/refresh-token").post(refreshAccessToken);
-router.route("/logout").post(authMiddleware, logoutUser);
-router.route("/change-pass").get(authMiddleware, getCurrentUser);
-router.route("/get-cur-user").post(authMiddleware, changeCurrentPassword);
-router.route("/update-user-data").post(authMiddleware, updateAccountDetails);
-
-router.route("/update-avatar").post(
-        upload.single("avatar"),
+router.route("/logoutUser").post(authMiddleware, logoutUser);
+router.route("/get-curUser").get(authMiddleware, getCurrentUser);
+router.route("/watchHistory").get(authMiddleware, getUserWatchHistory);
+router.route("/change-pass").post(authMiddleware, changeCurrentPassword);
+router.route("/update-userData").patch(authMiddleware, updateAccountDetails);
+router.route("/userChannelProfile/:userName").get(
         authMiddleware,
+        getUserChannelProfile
+);
+
+router.route("/update-avatar").patch(
+        authMiddleware,
+        upload.single("avatar"),
         updateAvatar
 );
 
-router.route("/update-cover-img").post(
-        upload.single("coverImage"),
+router.route("/update-cover-img").patch(
         authMiddleware,
+        upload.single("coverImage"),
         updateCoverImage
 );
 
