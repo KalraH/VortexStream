@@ -17,7 +17,9 @@ import {
 
 const router = Router();
 
-// Un-Secured Routes
+/**
+ * Unsecured Routes.
+ */
 router.route("/register").post(
         upload.fields([
                 {
@@ -34,28 +36,31 @@ router.route("/register").post(
 
 router.route("/login").post(loginUser);
 
-// Secured Routes
+/**
+ * Secured Routes.
+ */
 router.route("/refresh-token").post(refreshAccessToken);
-router.route("/logoutUser").post(authMiddleware, logoutUser);
-router.route("/get-curUser").get(authMiddleware, getCurrentUser);
+router.route("/logout").post(authMiddleware, logoutUser);
+router.route("/currentUser").get(authMiddleware, getCurrentUser);
 router.route("/watchHistory").get(authMiddleware, getUserWatchHistory);
-router.route("/change-pass").post(authMiddleware, changeCurrentPassword);
+router.route("/reset-password").patch(authMiddleware, changeCurrentPassword);
 router.route("/update-userData").patch(authMiddleware, updateAccountDetails);
-router.route("/userChannelProfile/:userName").get(
-        authMiddleware,
-        getUserChannelProfile
-);
 
 router.route("/update-avatar").patch(
-        authMiddleware,
-        upload.single("avatar"),
-        updateAvatar
+	authMiddleware,
+	upload.single("avatar"),
+	updateAvatar
 );
 
 router.route("/update-cover-img").patch(
+	authMiddleware,
+	upload.single("coverImage"),
+	updateCoverImage
+);
+
+router.route("/userChannelProfile/:userName").get(
         authMiddleware,
-        upload.single("coverImage"),
-        updateCoverImage
+        getUserChannelProfile
 );
 
 export default router;

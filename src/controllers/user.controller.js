@@ -48,10 +48,13 @@ const generateAccessRefreshToken = async (user) => {
 
 /**
  * Registers a new user.
- * @param 	{Object} req - The request object containing user details
- * @param 	{Object} res - The response object
+ * @route 	POST /register
+ * @access 	Public
+ * 
+ * @param 	{Object} req - The request object containing user details.
+ * @param 	{Object} res - The response object.
  *
- * @returns 	{Object} The response object with the created user details
+ * @returns 	{Object} The response object with the created user details.
  */
 const registerUser = asyncHandler(async (req, res) => {
         try {
@@ -156,6 +159,16 @@ const registerUser = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Login an existing user.
+ * @route 	POST /login
+ * @access 	Public
+ * 
+ * @param 	{Object} req - The request object containing user credential for Login.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with the logged user details and Access/refresh Tokens.
+ */
 const loginUser = asyncHandler(async (req, res) => {
         try {
                 const { email, userName, password } = req.body;
@@ -214,11 +227,21 @@ const loginUser = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Logout a logged-in user.
+ * @route 	POST /logout
+ * @access 	Private
+ * 
+ * @param 	{Object} req - The request object containing user details added via Auth middleware.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with the logged-out user details.
+ */
 const logoutUser = asyncHandler(async (req, res) => {
         try {
                 const userInstance = await User.findByIdAndUpdate(
                         req.user?._id,
-                        { $set: { refreshToken: null } },
+                        { $unset: { refreshToken: 1 } },
                         { new: true }
                 );
 
@@ -243,6 +266,16 @@ const logoutUser = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Re-generate Access & Refresh Tokens after validating the current Refresh Token.
+ * @route 	POST /refresh-token
+ * @access 	Private
+ * 
+ * @param 	{Object} req - The request object containing cookies with user refresh token.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with the updated user details & Access/Refresh Tokens.
+ */
 const refreshAccessToken = asyncHandler(async (req, res) => {
         try {
                 const token =
@@ -305,6 +338,16 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Reset an existing user's Password.
+ * @route 	PATCH /reset-password
+ * @access 	Private
+ * 
+ * @param 	{Object} req - The request object containing user Current and New Passwords.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with new Password creation confirmation.
+ */
 const changeCurrentPassword = asyncHandler(async (req, res) => {
         try {
                 const { currPass, newPass } = req.body;
@@ -350,6 +393,16 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Get an existing user's details.
+ * @route 	GET /currentUser
+ * @access 	Private
+ * 
+ * @param 	{Object} req - The request object containing user details added via Auth middleware.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with the curret active/logged-in user details.
+ */
 const getCurrentUser = asyncHandler(async (req, res) => {
         try {
                 return res
@@ -372,6 +425,16 @@ const getCurrentUser = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Update an existing User's Account Details.
+ * @route 	PATCH /update-userData
+ * @access 	Private
+ * 
+ * @param 	{Object} req - The request object containing user updation details.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with the updated user details.
+ */
 const updateAccountDetails = asyncHandler(async (req, res) => {
         try {
                 const { email, fullName } = req.body;
@@ -413,6 +476,16 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Update an existing User's Avatar Details.
+ * @route 	PATCH /update-avatar
+ * @access 	Private
+ * 
+ * @param 	{Object} req - The request object containing user Avatar file details added via Multer middleware.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with the updated user Avatar details.
+ */
 const updateAvatar = asyncHandler(async (req, res) => {
         try {
                 const avatarLocalPath = req.file?.path || null;
@@ -482,6 +555,16 @@ const updateAvatar = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Update an existing User's Cover Image Details.
+ * @route 	PATCH /update-cover-img
+ * @access 	Private
+ * 
+ * @param 	{Object} req - The request object containing user Cover Image file details added via Multer middleware.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with the updated user Cover Image details.
+ */
 const updateCoverImage = asyncHandler(async (req, res) => {
         try {
                 const coverImgLocalPath = req.file?.path || null;
@@ -551,6 +634,16 @@ const updateCoverImage = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Populate the User details with Channel Profile's data.
+ * @route 	GET /userChannelProfile/:userName
+ * @access 	Private
+ * 
+ * @param 	{Object} req - The request object containing user's UserName via Params.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with the user's details along with the Channel Profile ( subscribercount, channelsSubscribedToCount, isSubscribedFlag ).
+ */
 const getUserChannelProfile = asyncHandler(async (req, res) => {
         try {
                 const { userName } = req.params;
@@ -661,6 +754,16 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         }
 });
 
+/**
+ * Populate the User details with Watch History data.
+ * @route 	GET /watchHistory
+ * @access 	Private
+ * 
+ * @param 	{Object} req - The request object containing user details added via Auth middleware.
+ * @param 	{Object} res - The response object.
+ *
+ * @returns 	{Object} The response object with the user's Watch History data.
+ */
 const getUserWatchHistory = asyncHandler(async (req, res) => {
         try {
                 const userInstance = await User.aggregate([
