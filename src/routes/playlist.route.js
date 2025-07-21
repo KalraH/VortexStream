@@ -1,19 +1,26 @@
 import { Router } from "express";
-import { upload } from "../middlewares/multer.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import {  } from "../controllers/playlist.controller.js";
+import {
+        addVideoToPlaylist,
+        createPlaylist,
+        deletePlaylist,
+        getPlaylistById,
+        getUserPlaylists,
+        removeVideoFromPlaylist,
+        updatePlaylist,
+} from "../controllers/playlist.controller.js";
 
 const router = Router();
+router.use(authMiddleware);
 
-/**
- * Unsecured Routes.
- */
-router.route("/").post(  );
-
-
-/**
- * Secured Routes.
- */
-router.route("/").post(  );
+/* Secured Routes. */
+router.route("/").post(createPlaylist);
+router.route("/user/:userId").get(getUserPlaylists);
+router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);
+router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);
+router.route("/:playlistId")
+        .get(getPlaylistById)
+        .patch(updatePlaylist)
+        .delete(deletePlaylist);
 
 export default router;

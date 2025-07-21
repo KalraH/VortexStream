@@ -1,19 +1,15 @@
 import { Router } from "express";
-import { upload } from "../middlewares/multer.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import {  } from "../controllers/dashboard.controller.js";
+import {
+        getChannelStats,
+        getChannelVideos,
+} from "../controllers/dashboard.controller.js";
 
 const router = Router();
+router.use(authMiddleware);
 
-/**
- * Unsecured Routes.
- */
-router.route("/").post(  );
-
-
-/**
- * Secured Routes.
- */
-router.route("/").post(  );
+/* Secured Routes. */
+router.route("/stats").get(getChannelStats);
+router.route("/videos").get(getChannelVideos);
 
 export default router;

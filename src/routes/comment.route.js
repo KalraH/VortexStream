@@ -1,19 +1,17 @@
 import { Router } from "express";
-import { upload } from "../middlewares/multer.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import {  } from "../controllers/comment.controller.js";
+import {
+        addComment,
+        deleteComment,
+        updateComment,
+        getVideoComments,
+} from "../controllers/comment.controller.js";
 
 const router = Router();
+router.use(authMiddleware);
 
-/**
- * Unsecured Routes.
- */
-router.route("/").post(  );
-
-
-/**
- * Secured Routes.
- */
-router.route("/").post(  );
+/* Secured Routes. */
+router.route("/:videoId").get(getVideoComments).post(addComment);
+router.route("/c/:commentId").delete(deleteComment).patch(updateComment);
 
 export default router;

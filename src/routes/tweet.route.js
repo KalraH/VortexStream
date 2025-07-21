@@ -1,19 +1,18 @@
 import { Router } from "express";
-import { upload } from "../middlewares/multer.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import {  } from "../controllers/tweet.controller.js";
+import {
+        createTweet,
+        deleteTweet,
+        getUserTweets,
+        updateTweet,
+} from "../controllers/tweet.controller.js";
 
 const router = Router();
+router.use(authMiddleware);
 
-/**
- * Unsecured Routes.
- */
-router.route("/").post(  );
-
-
-/**
- * Secured Routes.
- */
-router.route("/").post(  );
+/* Secured Routes. */
+router.route("/").post(createTweet);
+router.route("/user/:userId").get(getUserTweets);
+router.route("/:tweetId").patch(updateTweet).delete(deleteTweet);
 
 export default router;
