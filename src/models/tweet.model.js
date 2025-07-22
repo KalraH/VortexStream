@@ -10,7 +10,7 @@ const tweetSchema = new Schema(
                 content: {
                         type: String,
                         required: [true, "Content is required"],
-                        maxlength: 280, // Twitter's character limit
+                        maxlength: [280, "Max 280 characters allowed"], // Twitter's character limit
                 },
         },
         {
