@@ -6,7 +6,7 @@ import { CONSTANTS } from "./constants.js";
 import likeRouter from "./routes/like.route.js";
 import userRouter from "./routes/user.route.js";
 import tweetRouter from "./routes/tweet.route.js";
-import videoRouter from "./routes/video.router.js";
+import videoRouter from "./routes/video.route.js";
 import commentRouter from "./routes/comment.route.js";
 import playlistRouter from "./routes/playlist.route.js";
 import dashboardRouter from "./routes/dashboard.route.js";

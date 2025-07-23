@@ -4,11 +4,41 @@ import mongooseAggegatePaginate from "mongoose-aggregate-paginate-v2";
 const videoSchema = new Schema(
         {
                 videoFile: {
-                        type: String, // Cloudinary URL
+                        type: {
+                                public_id: {
+                                        type: String,
+                                        required: [
+                                                true,
+                                                "Video File's Public ID is required",
+                                        ],
+                                },
+                                secure_url: {
+                                        type: String,
+                                        required: [
+                                                true,
+                                                "Video File's Secured URL is required",
+                                        ],
+                                }, // Cloudinary URL
+                        },
                         required: [true, "Video file is required"],
                 },
                 thumbnail: {
-                        type: String, // Cloudinary URL
+                        type: {
+                                public_id: {
+                                        type: String,
+                                        required: [
+                                                true,
+                                                "Thumbnail Public ID is required",
+                                        ],
+                                },
+                                secure_url: {
+                                        type: String,
+                                        required: [
+                                                true,
+                                                "Thumbnail Secured URL is required",
+                                        ],
+                                }, // Cloudinary URL
+                        },
                         required: [true, "Thumbnail is required"],
                 },
                 title: {

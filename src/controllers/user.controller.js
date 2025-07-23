@@ -128,8 +128,14 @@ const registerUser = asyncHandler(async (req, res) => {
                         email,
                         password,
                         fullName,
-                        avatar: avatar,
-                        coverImage: coverImage ? coverImage : null,
+                        avatar: {
+                                secure_url: avatar.secure_url,
+                                public_id: avatar.public_id,
+                        },
+                        coverImage: {
+                                secure_url: coverImage?.secure_url || null,
+                                public_id: coverImage?.public_id || null,
+                        },
                 });
 
                 const createdUser = await User.findById(newUser?._id).select(
@@ -214,10 +220,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
                 const { accessToken, refreshToken } =
                         await generateAccessRefreshToken(userInstance);
-
-                // console.log("USER CONTROLLER,", "TESTING LOGGING START --------------------------------------------------------------");
-                // console.log(user);
-                // console.log("USER CONTROLLER,", "TESTING LOGGING END ----------------------------------------------------------------");
 
                 return res
                         .status(HTTP_STATUS.OK)
@@ -529,7 +531,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
                 }
 
                 const avatar = await uploadOnCloud(avatarLocalPath);
-                if (!avatar) {
+                if (!avatar?.secure_url) {
                         throw new ApiError(
                                 HTTP_STATUS.BAD_REQUEST,
                                 "USER CONTROLLER, UPD AVATAR, Avatar did't get upload to Cloudinary.",
@@ -538,7 +540,9 @@ const updateAvatar = asyncHandler(async (req, res) => {
                         );
                 }
 
-                const userInstance = await User.findById(req.user?._id);
+                const userInstance = await User.findById(req.user?._id).select(
+                        "avatar"
+                );
                 if (!userInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
@@ -548,22 +552,29 @@ const updateAvatar = asyncHandler(async (req, res) => {
                         );
                 }
 
-                const oldAvatarURL = userInstance.avatar;
-                if (!oldAvatarURL) {
+                const oldAvatarPublicId = userInstance.avatar.public_id;
+                if (!oldAvatarPublicId) {
                         console.error(
                                 "USER CONTROLLER, UPD AVATAR,",
-                                "Old Avatar URL not found."
+                                "Old Avatar Public ID not found."
                         );
                 }
 
-                // Updating the new Avatar Cloudinary URL into DB.
-                userInstance.avatar = avatar;
-                await userInstance.save({ validateBeforeSave: false });
-
                 // Deleting Old Avatar from Cloudinary.
-                await deleteFromCloud(oldAvatarURL);
+                await deleteFromCloud(oldAvatarPublicId);
 
-                const updatedUser = await User.findById(userInstance._id);
+                const updatedUser = await User.findByIdAndUpdate(
+                        userInstance._id,
+                        {
+                                $set: {
+                                        avatar: {
+                                                public_id: avatar.public_id,
+                                                secure_url: avatar.secure_url,
+                                        },
+                                },
+                        },
+                        { new: true }
+                );
                 if (!updatedUser) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
@@ -616,7 +627,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
                 }
 
                 const coverImg = await uploadOnCloud(coverImgLocalPath);
-                if (!coverImg) {
+                if (!coverImg.secure_url) {
                         throw new ApiError(
                                 HTTP_STATUS.BAD_REQUEST,
                                 "USER CONTROLLER, UPD COVER IMG, Cover Image did't get upload to Cloudinary.",
@@ -625,7 +636,9 @@ const updateCoverImage = asyncHandler(async (req, res) => {
                         );
                 }
 
-                const userInstance = await User.findById(req.user?._id);
+                const userInstance = await User.findById(req.user?._id).select(
+                        "coverImage"
+                );
                 if (!userInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
@@ -635,7 +648,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
                         );
                 }
 
-                const oldCoverImgURL = userInstance.coverImage;
+                const oldCoverImgURL = userInstance.coverImage.public_id;
                 if (!oldCoverImgURL) {
                         console.error(
                                 "USER CONTROLLER, UPD COVER IMG,",
@@ -643,14 +656,21 @@ const updateCoverImage = asyncHandler(async (req, res) => {
                         );
                 }
 
-                // Updating the new Cover Image Cloudinary URL into DB.
-                userInstance.coverImage = coverImg;
-                await userInstance.save({ validateBeforeSave: false });
-
                 // Deleting Old Cover image from Cloudinary.
-                await deleteFromCloud(oldCoverImgURL);
+                await deleteFromCloud(oldCoverImgURL.public_id);
 
-                const updatedUser = await User.findById(userInstance._id);
+                const updatedUser = await User.findByIdAndUpdate(
+                        userInstance._id,
+                        {
+                                $set: {
+                                        coverImage: {
+                                                public_id: avatar.public_id,
+                                                secure_url: avatar.secure_url,
+                                        },
+                                },
+                        },
+                        { new: true }
+                );
                 if (!updatedUser) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
@@ -702,7 +722,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                         );
                 }
 
-		const userId = req?.user?._id;
+                const userId = req?.user?._id;
                 const channel = await User.aggregate([
                         // Finding User/Owner of this Channel
                         {

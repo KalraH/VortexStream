@@ -20,20 +20,17 @@ const uploadOnCloud = async (filePath) => {
 
                 const uploadResult = await cloudinary.uploader.upload(
                         filePath,
-                        { resource_type: "image" }
+                        { resource_type: "auto" }
                 );
-
-                // console.log("CLOUDINARY,", "TESTING LOGGING START --------------------------------------------------------------");
-                // console.log(uploadResult);
-                // console.log("CLOUDINARY,", "TESTING LOGGING END ----------------------------------------------------------------");
 
                 // Clean up the file if upload is completed
                 fs.unlinkSync(filePath);
 
-                return uploadResult.url;
+                return uploadResult;
         } catch (error) {
                 // Clean up the file if upload fails
                 fs.unlinkSync(filePath);
+
                 console.error(
                         "CLOUDINARY, UPLOAD TO CLOUD,",
                         "Error uploading file:",
@@ -44,52 +41,19 @@ const uploadOnCloud = async (filePath) => {
         }
 };
 
-const getCloudinaryPublicId = (url) => {
+const deleteFromCloud = async (publicId, resource_type="image") => {
         try {
-                const urlParts = url.split("/");
-                const fileWithExt = urlParts.pop(); // e.g., g9ecyquilzpktupweu5j.png
-                const fileName = fileWithExt.split(".")[0]; // g9ecyquilzpktupweu5j
-
-                // Remove everything until 'upload' (including version)
-                const uploadIndex = urlParts.indexOf("upload");
-                const folderParts = urlParts.slice(uploadIndex + 1); // After 'upload'
-
-                // Remove version if it exists (starts with 'v' followed by numbers)
-                if (
-                        folderParts[0]?.startsWith("v") &&
-                        !isNaN(folderParts[0].slice(1))
-                ) {
-                        folderParts.shift(); // remove the version
-                }
-
-                return folderParts.length > 0
-                        ? `${folderParts.join("/")}/${fileName}`
-                        : fileName;
-        } catch (error) {
-                console.error(
-                        "CLOUDINARY, GET PUB ID,",
-                        "Error extracting Public URL:",
-                        error
-                );
-                return null;
-        }
-};
-
-const deleteFromCloud = async (cloudURL) => {
-        try {
-                if (!cloudURL) return false;
-
-                const publicID = getCloudinaryPublicId(cloudURL);
+                if (!publicId) return false;
 
                 const deletionResult = await cloudinary.uploader.destroy(
-                        publicID,
-                        { resource_type: "image" }
+                        publicId,
+                        { resource_type: `${resource_type}` }
                 );
 
                 if (deletionResult.result === "ok") {
                         console.log(
                                 "CLOUDINARY, DELETE,",
-                                `Successfully deleted ${publicID}`
+                                `Successfully deleted ${publicId}`
                         );
                         return true;
                 } else {

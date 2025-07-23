@@ -36,11 +36,29 @@ const userSchema = new Schema(
                         trim: true,
                 },
                 avatar: {
-                        type: String, // Cloudinary URL
+                        type: {
+                                public_id: {
+                                        type: String,
+                                        required: [
+                                                true,
+                                                "Avatar Public ID is required",
+                                        ],
+                                },
+                                secure_url: {
+                                        type: String,
+                                        required: [
+                                                true,
+                                                "Avatar Secured URL is required",
+                                        ],
+                                }, // Cloudinary URL
+                        },
                         required: [true, "Avatar is required"],
                 },
                 coverImage: {
-                        type: String, // Cloudinary URL
+                        type: {
+                                public_id: String,
+                                secure_url: String, // Cloudinary URL
+                        },
                 },
                 watchHistory: [
                         {
