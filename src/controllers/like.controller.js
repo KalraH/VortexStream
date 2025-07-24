@@ -3,7 +3,7 @@ import { Like } from "../models/like.model.js";
 import { HTTP_STATUS } from "../constants.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import mongoose, { isValidObjectId } from "mongoose";
+import Mongoose, { isValidObjectId } from "mongoose";
 
 /**
  * Informing regarding to toggle Video Like (Video is Liked by the current User or not).
@@ -245,7 +245,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                         // Getting all videos Liked by User from likedBy
                         {
                                 $match: {
-                                        likedBy: mongoose.Types.ObjectId(
+                                        likedBy: Mongoose.Types.ObjectId(
                                                 userId
                                         ),
                                 },

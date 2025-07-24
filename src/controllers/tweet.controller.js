@@ -3,7 +3,7 @@ import { HTTP_STATUS } from "../constants.js";
 import { Tweet } from "../models/tweet.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import mongoose, { isValidObjectId } from "mongoose";
+import Mongoose, { isValidObjectId } from "mongoose";
 
 /**
  * Creating a new Tweet for posting via an existing user.
@@ -96,7 +96,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
                         // Getting All tweets with Owner as User of UserId
                         {
                                 $match: {
-                                        owner: mongoose.Types.ObjectId(userId),
+                                        owner: Mongoose.Types.ObjectId(userId),
                                 },
                         },
                         // Getting Owner/User Details from User Model

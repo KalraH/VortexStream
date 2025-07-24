@@ -1,13 +1,12 @@
 import ApiError from "../utils/ApiError.js";
 import { HTTP_STATUS } from "../constants.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import mongoose, { isValidObjectId } from "mongoose";
+import Mongoose, { isValidObjectId } from "mongoose";
 import asyncHandler from "../utils/asyncHandler.js";
 import { Playlist } from "../models/playlist.model.js";
 
 const createPlaylist = asyncHandler(async (req, res) => {
         const { name, description } = req.body;
-
 });
 
 const getUserPlaylists = asyncHandler(async (req, res) => {

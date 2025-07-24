@@ -3,7 +3,7 @@ import { HTTP_STATUS } from "../constants.js";
 import { User } from "../models/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import mongoose, { isValidObjectId } from "mongoose";
+import Mongoose, { isValidObjectId } from "mongoose";
 import { uploadOnCloud } from "../utils/cloudinary.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
