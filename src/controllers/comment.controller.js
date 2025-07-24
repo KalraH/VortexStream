@@ -12,7 +12,7 @@ import Mongoose, { isValidObjectId } from "mongoose";
  * @route 	GET /:videoId
  * @access 	Private
  *
- * @param 	{Object} req - The request object containing Video-ID in params.
+ * @param 	{Object} req - The request object containing Video-ID in params & Paginate options in query.
  * @param 	{Object} res - The response object.
  *
  * @returns 	{Object} The response object with all Video Comments.
@@ -160,7 +160,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
  * @route 	POST /:videoId
  * @access 	Private
  *
- * @param 	{Object} req - The request object containing Video-ID in params.
+ * @param 	{Object} req - The request object containing Video-ID in params & comment content in Body.
  * @param 	{Object} res - The response object.
  *
  * @returns 	{Object} The response object with new Comment details.
@@ -238,7 +238,7 @@ const addComment = asyncHandler(async (req, res) => {
  * @route 	PATCH /c/:commentId
  * @access 	Private
  *
- * @param 	{Object} req - The request object containing Comment-ID in params.
+ * @param 	{Object} req - The request object containing Comment-ID in params & comment content in Body..
  * @param 	{Object} res - The response object.
  *
  * @returns 	{Object} The response object with updated Comment details.
