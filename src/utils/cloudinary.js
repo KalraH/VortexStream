@@ -41,7 +41,14 @@ const uploadOnCloud = async (filePath) => {
         }
 };
 
-const deleteFromCloud = async (publicId, resource_type="image") => {
+/**
+ * Delete a file on Cloudinary.
+ * @param {string} publicId - The Public-ID of file for deletion.
+ * @param {string} resource_type - The Resource Type of file for deletion.
+ *
+ * @returns {boolean} - The status of file deletion.
+ */
+const deleteFromCloud = async (publicId, resource_type = "image") => {
         try {
                 if (!publicId) return false;
 
