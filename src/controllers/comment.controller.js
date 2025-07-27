@@ -29,18 +29,14 @@ const getVideoComments = asyncHandler(async (req, res) => {
                 if (!videoId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "COMMENT CONTROLLER, GET VIDEO COMMENTS, Video-ID is required.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, GET VIDEO COMMENTS, Video-ID is required."
                         );
                 }
 
                 if (!isValidObjectId(videoId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "COMMENT CONTROLLER, GET VIDEO COMMENTS, Video ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, GET VIDEO COMMENTS, Video ID Invalid."
                         );
                 }
 
@@ -48,9 +44,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
                 if (!videoInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "COMMENT CONTROLLER, GET VIDEO COMMENTS, Video data not found.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, GET VIDEO COMMENTS, Video data not found."
                         );
                 }
 
@@ -129,9 +123,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
                 if (!commentsAggegate) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "COMMENT CONTROLLER, GET VIDEO COMMENTS, Comment gathering failed.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, GET VIDEO COMMENTS, Comment gathering failed."
                         );
                 }
 
@@ -170,31 +162,32 @@ const addComment = asyncHandler(async (req, res) => {
                 const videoId = req?.params;
                 const { content } = req?.body;
 
-                if ([videoId, content].some((field) => field?.trim() === "")) {
+                if (
+                        [videoId, content].some(
+                                (field) =>
+                                        !field ||
+                                        typeof field !== "string" ||
+                                        field.trim() === ""
+                        )
+                ) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "COMMENT CONTROLLER, ADD COMMENT, Both  video-ID and comment content are required.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, ADD COMMENT, Both  video-ID and comment content are required."
                         );
                 }
 
                 if (!isValidObjectId(videoId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "COMMENT CONTROLLER, ADD COMMENT, Video ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, ADD COMMENT, Video ID Invalid."
                         );
                 }
 
                 const videoInstance = await Video.findById(videoId);
                 if (!videoInstance) {
                         throw new ApiError(
-                                HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "COMMENT CONTROLLER, ADD COMMENT, Video data not found.",
-                                [error.message],
-                                error.stack
+                                HTTP_STATUS.NOT_FOUND,
+                                "COMMENT CONTROLLER, ADD COMMENT, Video data not found."
                         );
                 }
 
@@ -207,9 +200,7 @@ const addComment = asyncHandler(async (req, res) => {
                 if (!newCommentInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "COMMENT CONTROLLER, ADD COMMENT, Comment creation failed.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, ADD COMMENT, Comment creation failed."
                         );
                 }
 
@@ -250,23 +241,22 @@ const updateComment = asyncHandler(async (req, res) => {
 
                 if (
                         [commentId, content].some(
-                                (field) => field?.trim() === ""
+                                (field) =>
+                                        !field ||
+                                        typeof field !== "string" ||
+                                        field.trim() === ""
                         )
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "COMMENT CONTROLLER, UPDATE COMMENT, Both comment-ID and comment content are required.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, UPDATE COMMENT, Both comment-ID and comment content are required."
                         );
                 }
 
                 if (!isValidObjectId(commentId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "COMMENT CONTROLLER, UPDATE COMMENT, Comment ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, UPDATE COMMENT, Comment ID Invalid."
                         );
                 }
 
@@ -274,9 +264,7 @@ const updateComment = asyncHandler(async (req, res) => {
                 if (!commentInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "COMMENT CONTROLLER, UPDATE COMMENT, Comment NOT FOUND.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, UPDATE COMMENT, Comment NOT FOUND."
                         );
                 }
 
@@ -286,9 +274,7 @@ const updateComment = asyncHandler(async (req, res) => {
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "COMMENT CONTROLLER, UPDATE COMMENT, User not Authorized to update the Comment.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, UPDATE COMMENT, User not Authorized to update the Comment."
                         );
                 }
 
@@ -301,9 +287,7 @@ const updateComment = asyncHandler(async (req, res) => {
                 if (!updatedCommentInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "COMMENT CONTROLLER, UPDATE COMMENT, Comment updation failed.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, UPDATE COMMENT, Comment updation failed."
                         );
                 }
 
@@ -343,18 +327,14 @@ const deleteComment = asyncHandler(async (req, res) => {
                 if (!commentId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "COMMENT CONTROLLER, DELETE COMMENT, comment-ID is required.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, DELETE COMMENT, comment-ID is required."
                         );
                 }
 
                 if (!isValidObjectId(commentId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "COMMENT CONTROLLER, DELETE COMMENT, Comment ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, DELETE COMMENT, Comment ID Invalid."
                         );
                 }
 
@@ -362,9 +342,7 @@ const deleteComment = asyncHandler(async (req, res) => {
                 if (!commentInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "COMMENT CONTROLLER, DELETE COMMENT, Comment NOT FOUND.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, DELETE COMMENT, Comment NOT FOUND."
                         );
                 }
 
@@ -374,9 +352,7 @@ const deleteComment = asyncHandler(async (req, res) => {
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "COMMENT CONTROLLER, DELETE COMMENT, User not Authorized to delete the Comment.",
-                                [error.message],
-                                error.stack
+                                "COMMENT CONTROLLER, DELETE COMMENT, User not Authorized to delete the Comment."
                         );
                 }
 

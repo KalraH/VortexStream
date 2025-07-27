@@ -19,12 +19,17 @@ import { Playlist } from "../models/playlist.model.js";
 const createPlaylist = asyncHandler(async (req, res) => {
         try {
                 const { name, description } = req.body;
-                if ([name, description].some((field) => field?.trim() === "")) {
+                if (
+                        [name, description].some(
+                                (field) =>
+                                        !field ||
+                                        typeof field !== "string" ||
+                                        field.trim() === ""
+                        )
+                ) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, CREATE, All fields are required.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, CREATE, All fields are required."
                         );
                 }
 
@@ -36,9 +41,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
                 if (!newPlaylist) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "PLAYLIST CONTROLLER, CREATE, Error while creating playlist.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, CREATE, Error while creating playlist."
                         );
                 }
 
@@ -78,18 +81,14 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
                 if (!userId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, GET USR PLAYLIST, User-ID is needed.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, GET USR PLAYLIST, User-ID is needed."
                         );
                 }
 
                 if (!isValidObjectId(userId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, GET USR PLAYLIST, User-ID is Invalid.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, GET USR PLAYLIST, User-ID is Invalid."
                         );
                 }
 
@@ -137,9 +136,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
                 if (!playlistInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "PLAYLIST CONTROLLER, GET USR PLAYLIST, Playlists not found.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, GET USR PLAYLIST, Playlists not found."
                         );
                 }
 
@@ -179,18 +176,14 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 if (!playlistId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, GET PLAYLIST, Playlist-ID is needed.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, GET PLAYLIST, Playlist-ID is needed."
                         );
                 }
 
                 if (!isValidObjectId(playlistId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, GET PLAYLIST, Playlist-ID is Invalid.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, GET PLAYLIST, Playlist-ID is Invalid."
                         );
                 }
 
@@ -198,9 +191,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 if (!existingPlaylist) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "PLAYLIST CONTROLLER, GET PLAYLIST, Playlist Not Found.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, GET PLAYLIST, Playlist Not Found."
                         );
                 }
 
@@ -282,9 +273,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                 if (!playlistInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "PLAYLIST CONTROLLER, GET PLAYLIST, Playlist search failed.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, GET PLAYLIST, Playlist search failed."
                         );
                 }
 
@@ -323,23 +312,22 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
                 const { playlistId, videoId } = req.params;
                 if (
                         [playlistId, videoId].some(
-                                (field) => field?.trim() === ""
+                                (field) =>
+                                        !field ||
+                                        typeof field !== "string" ||
+                                        field.trim() === ""
                         )
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, ADD VIDEO, Both Playlist-ID & Playlist-ID are needed.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, ADD VIDEO, Both Playlist-ID & Playlist-ID are needed."
                         );
                 }
 
                 if (!isValidObjectId(playlistId) || !isValidObjectId(videoId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, ADD VIDEO, Playlist-ID or Video-ID are Invalid.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, ADD VIDEO, Playlist-ID or Video-ID are Invalid."
                         );
                 }
 
@@ -347,9 +335,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
                 if (!existingVideo) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "PLAYLIST CONTROLLER, ADD VIDEO, Video Not Found.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, ADD VIDEO, Video Not Found."
                         );
                 }
 
@@ -357,9 +343,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
                 if (!existingPlaylist) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "PLAYLIST CONTROLLER, ADD VIDEO, Playlist Not Found.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, ADD VIDEO, Playlist Not Found."
                         );
                 }
 
@@ -370,9 +354,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "PLAYLIST CONTROLLER, ADD VIDEO, user not Authorized to add this video into playlist.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, ADD VIDEO, user not Authorized to add this video into playlist."
                         );
                 }
 
@@ -389,9 +371,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
                 if (!updatedPlaylist) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "PLAYLIST CONTROLLER, ADD VIDEO, Playlist updation failed.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, ADD VIDEO, Playlist updation failed."
                         );
                 }
 
@@ -430,23 +410,22 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
                 const { playlistId, videoId } = req.params;
                 if (
                         [playlistId, videoId].some(
-                                (field) => field?.trim() === ""
+                                (field) =>
+                                        !field ||
+                                        typeof field !== "string" ||
+                                        field.trim() === ""
                         )
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Both Playlist-ID & Playlist-ID are needed.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Both Playlist-ID & Playlist-ID are needed."
                         );
                 }
 
                 if (!isValidObjectId(playlistId) || !isValidObjectId(videoId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Playlist-ID or Video-ID are Invalid.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Playlist-ID or Video-ID are Invalid."
                         );
                 }
 
@@ -454,9 +433,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
                 if (!existingVideo) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Video Not Found.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Video Not Found."
                         );
                 }
 
@@ -464,9 +441,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
                 if (!existingPlaylist) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Playlist Not Found.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Playlist Not Found."
                         );
                 }
 
@@ -477,9 +452,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "PLAYLIST CONTROLLER, REMOVE VIDEO, user not Authorized to remove this video from playlist.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, REMOVE VIDEO, user not Authorized to remove this video from playlist."
                         );
                 }
 
@@ -496,9 +469,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
                 if (!updatedPlaylist) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Video removal failed.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, REMOVE VIDEO, Video removal failed."
                         );
                 }
 
@@ -538,18 +509,14 @@ const deletePlaylist = asyncHandler(async (req, res) => {
                 if (!playlistId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, DELETE, Playlist-ID is needed.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, DELETE, Playlist-ID is needed."
                         );
                 }
 
                 if (!isValidObjectId(playlistId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, DELETE, Playlist-ID is Invalid.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, DELETE, Playlist-ID is Invalid."
                         );
                 }
 
@@ -557,9 +524,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
                 if (!existingPlaylist) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "PLAYLIST CONTROLLER, DELETTE, Playlist Not Found.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, DELETTE, Playlist Not Found."
                         );
                 }
 
@@ -569,9 +534,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "PLAYLIST CONTROLLER, DELETE, user not Authorized to delete this playlist.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, DELETE, user not Authorized to delete this playlist."
                         );
                 }
 
@@ -612,23 +575,22 @@ const updatePlaylist = asyncHandler(async (req, res) => {
                 const { name, description } = req.body;
                 if (
                         [name, description, playlistId].some(
-                                (field) => field?.trim() === ""
+                                (field) =>
+                                        !field ||
+                                        typeof field !== "string" ||
+                                        field.trim() === ""
                         )
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, UPDATE, All fields (Name, Description, Playlist-ID) are required.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, UPDATE, All fields (Name, Description, Playlist-ID) are required."
                         );
                 }
 
                 if (!isValidObjectId(playlistId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "PLAYLIST CONTROLLER, UPDATE, Playlist-ID is Invalid.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, UPDATE, Playlist-ID is Invalid."
                         );
                 }
 
@@ -636,9 +598,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
                 if (!existingPlaylist) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "PLAYLIST CONTROLLER, UPDATE, Playlist Not Found.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, UPDATE, Playlist Not Found."
                         );
                 }
 
@@ -648,9 +608,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "PLAYLIST CONTROLLER, UPDATE, user not Authorized to update this playlist.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, UPDATE, user not Authorized to update this playlist."
                         );
                 }
 
@@ -667,9 +625,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
                 if (!updatedPlaylist) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "PLAYLIST CONTROLLER, UPDATE, Error while updating playlist.",
-                                [error.message],
-                                error.stack
+                                "PLAYLIST CONTROLLER, UPDATE, Error while updating playlist."
                         );
                 }
 

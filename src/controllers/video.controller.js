@@ -699,18 +699,15 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
                         );
                 }
 
-                return res
-                        .status(HTTP_STATUS.OK)
-                        .json(
-                                new ApiResponse(
-                                        HTTP_STATUS.OK,
-                                        `VIDEO CONTROLLER, TOGGLE, Video ${updatedVideo?._id} publish status toggeled successfully.`,
-                                        {
-                                                isPublished:
-                                                        updatedVideo.isPublished,
-                                        }
-                                )
-                        );
+                return res.status(HTTP_STATUS.OK).json(
+                        new ApiResponse(
+                                HTTP_STATUS.OK,
+                                `VIDEO CONTROLLER, TOGGLE, Video ${updatedVideo?._id} publish status toggeled successfully.`,
+                                {
+                                        isPublished: updatedVideo.isPublished,
+                                }
+                        )
+                );
         } catch (error) {
                 throw new ApiError(
                         error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR,

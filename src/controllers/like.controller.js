@@ -1,6 +1,6 @@
 import ApiError from "../utils/ApiError.js";
-import { Like } from "../models/like.model.js";
 import { HTTP_STATUS } from "../constants.js";
+import { Like } from "../models/like.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import Mongoose, { isValidObjectId } from "mongoose";
@@ -21,18 +21,14 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
                 if (!videoId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "LIKE CONTROLLER, TOGGLE VIDEO LIKE, Video-Id is required.",
-                                [error.message],
-                                error.stack
+                                "LIKE CONTROLLER, TOGGLE VIDEO LIKE, Video-Id is required."
                         );
                 }
 
                 if (!isValidObjectId(videoId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "LIKE CONTROLLER, TOGGLE VIDEO LIKE, Video ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "LIKE CONTROLLER, TOGGLE VIDEO LIKE, Video ID Invalid."
                         );
                 }
 
@@ -95,18 +91,14 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
                 if (!commentId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "LIKE CONTROLLER, TOGGLE COMMENT LIKE, Comment-Id is required.",
-                                [error.message],
-                                error.stack
+                                "LIKE CONTROLLER, TOGGLE COMMENT LIKE, Comment-Id is required."
                         );
                 }
 
                 if (!isValidObjectId(commentId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "LIKE CONTROLLER, TOGGLE COMMENT LIKE, Comment ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "LIKE CONTROLLER, TOGGLE COMMENT LIKE, Comment ID Invalid."
                         );
                 }
 
@@ -169,18 +161,14 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
                 if (!tweetId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "LIKE CONTROLLER, TOGGLE TWEET LIKE, Tweet-Id is required.",
-                                [error.message],
-                                error.stack
+                                "LIKE CONTROLLER, TOGGLE TWEET LIKE, Tweet-Id is required."
                         );
                 }
 
                 if (!isValidObjectId(tweetId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "LIKE CONTROLLER, TOGGLE TWEET LIKE, Tweet ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "LIKE CONTROLLER, TOGGLE TWEET LIKE, Tweet ID Invalid."
                         );
                 }
 
@@ -311,6 +299,13 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                                 },
                         },
                 ]);
+
+                if (!likedVideosInstance) {
+                        throw new ApiError(
+                                HTTP_STATUS.INTERNAL_SERVER_ERROR,
+                                "LIKE CONTROLLER, GET LIKED VIDEOS, fetching liked videos failed."
+                        );
+                }
 
                 return res
                         .status(HTTP_STATUS.CREATED)

@@ -21,18 +21,14 @@ const toggleSubscription = asyncHandler(async (req, res) => {
                 if (!channelId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel-Id is required.",
-                                [error.message],
-                                error.stack
+                                "SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel-Id is required."
                         );
                 }
 
                 if (!isValidObjectId(channelId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel ID Invalid."
                         );
                 }
 
@@ -97,18 +93,14 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                 if (!channelId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Channel-Id is required.",
-                                [error.message],
-                                error.stack
+                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Channel-Id is required."
                         );
                 }
 
                 if (!isValidObjectId(channelId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Channel ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Channel ID Invalid."
                         );
                 }
 
@@ -184,9 +176,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                 if (!subscribers) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Subscribers fetching failed.",
-                                [error.message],
-                                error.stack
+                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Subscribers fetching failed."
                         );
                 }
 
@@ -226,18 +216,14 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                 if (!subscriberId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "SUBSCRIPTION CONTROLLER, GET USR SUBSCRIBED CHANNELS, Subscriber-Id is required.",
-                                [error.message],
-                                error.stack
+                                "SUBSCRIPTION CONTROLLER, GET USR SUBSCRIBED CHANNELS, Subscriber-Id is required."
                         );
                 }
 
                 if (!isValidObjectId(subscriberId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "SUBSCRIPTION CONTROLLER, GET USR SUBSCRIBED CHANNELS, Subscriber ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "SUBSCRIPTION CONTROLLER, GET USR SUBSCRIBED CHANNELS, Subscriber ID Invalid."
                         );
                 }
 
@@ -309,9 +295,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                 if (!subscribedChannels) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "SUBSCRIPTION CONTROLLER, GET USR SUBSCRIBED CHANNELS, channels fetching failed.",
-                                [error.message],
-                                error.stack
+                                "SUBSCRIPTION CONTROLLER, GET USR SUBSCRIBED CHANNELS, channels fetching failed."
                         );
                 }
 

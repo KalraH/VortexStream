@@ -94,9 +94,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
                 if (!channelStats) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "DASHBOARD CONTROLLER, GET CHANNEL STATS, Channel Stats collection failed.",
-                                [error.message],
-                                error.stack
+                                "DASHBOARD CONTROLLER, GET CHANNEL STATS, Channel Stats collection failed."
                         );
                 }
 
@@ -191,9 +189,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
                 if (!channelVideos) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "DASHBOARD CONTROLLER, GET CHANNEL VIDS, Channel Videos gathering failed.",
-                                [error.message],
-                                error.stack
+                                "DASHBOARD CONTROLLER, GET CHANNEL VIDS, Channel Videos gathering failed."
                         );
                 }
 

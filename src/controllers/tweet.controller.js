@@ -20,10 +20,8 @@ const createTweet = asyncHandler(async (req, res) => {
                 const { content } = req.body;
                 if (!content) {
                         throw new ApiError(
-                                HTTP_STATUS.NO_CONTENT,
-                                "TWEET CONTROLLER, CREATE TWEET, Tweet content is required.",
-                                [error.message],
-                                error.stack
+                                HTTP_STATUS.NOT_ACCEPTABLE,
+                                "TWEET CONTROLLER, CREATE TWEET, Tweet content is required."
                         );
                 }
 
@@ -34,9 +32,7 @@ const createTweet = asyncHandler(async (req, res) => {
                 if (!tweetInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "TWEET CONTROLLER, CREATE TWEET, Tweet creation failed.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, CREATE TWEET, Tweet creation failed."
                         );
                 }
 
@@ -75,19 +71,15 @@ const getUserTweets = asyncHandler(async (req, res) => {
                 const { userId } = req.params;
                 if (!userId) {
                         throw new ApiError(
-                                HTTP_STATUS.NO_CONTENT,
-                                "TWEET CONTROLLER, GET USR TWEETS, User ID is required.",
-                                [error.message],
-                                error.stack
+                                HTTP_STATUS.NOT_ACCEPTABLE,
+                                "TWEET CONTROLLER, GET USR TWEETS, User ID is required."
                         );
                 }
 
                 if (!isValidObjectId(userId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "TWEET CONTROLLER, GET USR TWEETS, User ID Invalid.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, GET USR TWEETS, User ID Invalid."
                         );
                 }
 
@@ -178,9 +170,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
                 if (!tweetInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "TWEET CONTROLLER, GET USR TWEETS, Tweet collection failed.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, GET USR TWEETS, Tweet collection failed."
                         );
                 }
 
@@ -220,28 +210,22 @@ const updateTweet = asyncHandler(async (req, res) => {
                 const { tweetId } = req.params;
                 if (!content) {
                         throw new ApiError(
-                                HTTP_STATUS.NO_CONTENT,
-                                "TWEET CONTROLLER, UPDATE TWEET, Tweet content is required.",
-                                [error.message],
-                                error.stack
+                                HTTP_STATUS.NOT_ACCEPTABLE,
+                                "TWEET CONTROLLER, UPDATE TWEET, Tweet content is required."
                         );
                 }
 
                 if (!tweetId) {
                         throw new ApiError(
-                                HTTP_STATUS.NO_CONTENT,
-                                "TWEET CONTROLLER, UPDATE TWEET, Tweet ID is required.",
-                                [error.message],
-                                error.stack
+                                HTTP_STATUS.NOT_ACCEPTABLE,
+                                "TWEET CONTROLLER, UPDATE TWEET, Tweet ID is required."
                         );
                 }
 
                 if (!isValidObjectId(tweetId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "TWEET CONTROLLER, UPDATE TWEET, Tweet ID Not Found.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, UPDATE TWEET, Tweet ID Not Found."
                         );
                 }
 
@@ -249,9 +233,7 @@ const updateTweet = asyncHandler(async (req, res) => {
                 if (!tweetInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "TWEET CONTROLLER, UPDATE TWEET, Tweet not found.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, UPDATE TWEET, Tweet not found."
                         );
                 }
 
@@ -262,9 +244,7 @@ const updateTweet = asyncHandler(async (req, res) => {
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "TWEET CONTROLLER, UPDATE TWEET, User not Authorized to update the tweet.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, UPDATE TWEET, User not Authorized to update the tweet."
                         );
                 }
 
@@ -276,9 +256,7 @@ const updateTweet = asyncHandler(async (req, res) => {
                 if (!newTweetInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "TWEET CONTROLLER, UPDATE TWEET, unable to update the tweet.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, UPDATE TWEET, unable to update the tweet."
                         );
                 }
 
@@ -317,19 +295,15 @@ const deleteTweet = asyncHandler(async (req, res) => {
                 const { tweetId } = req.params;
                 if (!tweetId) {
                         throw new ApiError(
-                                HTTP_STATUS.NO_CONTENT,
-                                "TWEET CONTROLLER, DELETE TWEET, Tweet ID is required.",
-                                [error.message],
-                                error.stack
+                                HTTP_STATUS.NOT_ACCEPTABLE,
+                                "TWEET CONTROLLER, DELETE TWEET, Tweet ID is required."
                         );
                 }
 
                 if (!isValidObjectId(tweetId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "TWEET CONTROLLER, DELETE TWEET, Tweet ID Not Found.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, DELETE TWEET, Tweet ID Not Found."
                         );
                 }
 
@@ -337,9 +311,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
                 if (!tweetInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "TWEET CONTROLLER, DELETE TWEET, Tweet not found.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, DELETE TWEET, Tweet not found."
                         );
                 }
 
@@ -350,9 +322,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "TWEET CONTROLLER, DELETE TWEET, User not Authorized to delete the tweet.",
-                                [error.message],
-                                error.stack
+                                "TWEET CONTROLLER, DELETE TWEET, User not Authorized to delete the tweet."
                         );
                 }
 

@@ -19,9 +19,7 @@ const generateAccessRefreshToken = async (user) => {
                 if (!accessToken) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "USER CONTROLLER, GEN ACC REF TOKEN, Access token generation failed.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, GEN ACC REF TOKEN, Access token generation failed."
                         );
                 }
 
@@ -29,9 +27,7 @@ const generateAccessRefreshToken = async (user) => {
                 if (!refreshToken) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "USER CONTROLLER, GEN ACC REF TOKEN, Refresh token generation failed.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, GEN ACC REF TOKEN, Refresh token generation failed."
                         );
                 }
 
@@ -70,14 +66,15 @@ const registerUser = asyncHandler(async (req, res) => {
 
                 if (
                         [userName, email, password, fullName].some(
-                                (field) => field?.trim() === ""
+                                (field) =>
+                                        !field ||
+                                        typeof field !== "string" ||
+                                        field.trim() === ""
                         )
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "USER CONTROLLER, REGISTER, All fields are required.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, REGISTER, All fields are required."
                         );
                 }
 
@@ -88,9 +85,7 @@ const registerUser = asyncHandler(async (req, res) => {
                 if (existingUser) {
                         throw new ApiError(
                                 HTTP_STATUS.CONFLICT,
-                                "USER CONTROLLER, REGISTER, User with this email already exists.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, REGISTER, User with this email already exists."
                         );
                 }
 
@@ -105,9 +100,7 @@ const registerUser = asyncHandler(async (req, res) => {
                 if (!avatarLocalPath) {
                         throw new ApiError(
                                 HTTP_STATUS.BAD_REQUEST,
-                                "USER CONTROLLER, REGISTER, Avatar file path is missing.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, REGISTER, Avatar file path is missing."
                         );
                 }
 
@@ -117,9 +110,7 @@ const registerUser = asyncHandler(async (req, res) => {
                 if (!avatar) {
                         throw new ApiError(
                                 HTTP_STATUS.BAD_REQUEST,
-                                "USER CONTROLLER, REGISTER, Avatar did't get upload to Cloudinary.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, REGISTER, Avatar did't get upload to Cloudinary."
                         );
                 }
 
@@ -145,9 +136,7 @@ const registerUser = asyncHandler(async (req, res) => {
                 if (!createdUser) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "USER CONTROLLER, REGISTER, User Creation failed.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, REGISTER, User Creation failed."
                         );
                 }
 
@@ -196,9 +185,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 if ((!email && !userName) || !password) {
                         throw new ApiError(
                                 HTTP_STATUS.PARTIAL_CONTENT,
-                                "USER CONTROLLER, LOGIN, (Email or UserName) and password are required.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, LOGIN, (Email or UserName) and password are required."
                         );
                 }
 
@@ -212,9 +199,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 ) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "USER CONTROLLER, LOGIN, Invalid email or password.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, LOGIN, Invalid email or password."
                         );
                 }
 
@@ -303,9 +288,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
                 if (!token) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "USER CONTROLLER, REFACC TOKEN, Token not provided.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, REFACC TOKEN, Token not provided."
                         );
                 }
 
@@ -320,18 +303,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
                 if (!userInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "USER CONTROLLER, REFACC TOKEN, Invalid token provided.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, REFACC TOKEN, Invalid token provided."
                         );
                 }
 
                 if (token !== userInstance.refreshToken) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "USER CONTROLLER, REFACC TOKEN, Refresh Token is Expired or Invalid.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, REFACC TOKEN, Refresh Token is Expired or Invalid."
                         );
                 }
 
@@ -384,9 +363,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
                 if (!userInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "USER CONTROLLER, CHANGE CURR PASS, User details INVALID.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, CHANGE CURR PASS, User details INVALID."
                         );
                 }
 
@@ -395,9 +372,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
                 if (!isPassCorrect) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "USER CONTROLLER, CHANGE CURR PASS, INVALID current password.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, CHANGE CURR PASS, INVALID current password."
                         );
                 }
 
@@ -471,9 +446,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
                 if (!fullName && !email) {
                         throw new ApiError(
                                 HTTP_STATUS.NO_CONTENT,
-                                "USER CONTROLLER, UPD USR DETAILS, updation fields required.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, UPD USR DETAILS, updation fields required."
                         );
                 }
 
@@ -524,9 +497,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
                 if (!avatarLocalPath) {
                         throw new ApiError(
                                 HTTP_STATUS.NO_CONTENT,
-                                "USER CONTROLLER, UPD AVATAR, updation field required.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, UPD AVATAR, updation field required."
                         );
                 }
 
@@ -534,9 +505,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
                 if (!avatar?.secure_url) {
                         throw new ApiError(
                                 HTTP_STATUS.BAD_REQUEST,
-                                "USER CONTROLLER, UPD AVATAR, Avatar did't get upload to Cloudinary.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, UPD AVATAR, Avatar did't get upload to Cloudinary."
                         );
                 }
 
@@ -546,9 +515,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
                 if (!userInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "USER CONTROLLER, UPD AVATAR, User details INVALID.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, UPD AVATAR, User details INVALID."
                         );
                 }
 
@@ -578,9 +545,7 @@ const updateAvatar = asyncHandler(async (req, res) => {
                 if (!updatedUser) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "USER CONTROLLER, UPD AVATAR, Updated user not found.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, UPD AVATAR, Updated user not found."
                         );
                 }
 
@@ -620,9 +585,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
                 if (!coverImgLocalPath) {
                         throw new ApiError(
                                 HTTP_STATUS.NO_CONTENT,
-                                "USER CONTROLLER, UPD COVER IMG, updation field required.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, UPD COVER IMG, updation field required."
                         );
                 }
 
@@ -630,9 +593,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
                 if (!coverImg.secure_url) {
                         throw new ApiError(
                                 HTTP_STATUS.BAD_REQUEST,
-                                "USER CONTROLLER, UPD COVER IMG, Cover Image did't get upload to Cloudinary.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, UPD COVER IMG, Cover Image did't get upload to Cloudinary."
                         );
                 }
 
@@ -642,9 +603,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
                 if (!userInstance) {
                         throw new ApiError(
                                 HTTP_STATUS.UNAUTHORIZED,
-                                "USER CONTROLLER, UPD COVER IMG, User details INVALID.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, UPD COVER IMG, User details INVALID."
                         );
                 }
 
@@ -674,9 +633,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
                 if (!updatedUser) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "USER CONTROLLER, UPD COVER IMG, Updated user not found.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, UPD COVER IMG, Updated user not found."
                         );
                 }
 
@@ -716,9 +673,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                 if (!userName?.trim()) {
                         throw new ApiError(
                                 HTTP_STATUS.BAD_REQUEST,
-                                "USER CONTROLLER, GET USR CHANNEL PROF, UserName is not available.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, GET USR CHANNEL PROF, UserName is not available."
                         );
                 }
 
@@ -789,9 +744,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                 if (!channel?.length) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "USER CONTROLLER, GET USR CHANNEL PROF, Channel does not exitst.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, GET USR CHANNEL PROF, Channel does not exitst."
                         );
                 }
 
@@ -880,9 +833,7 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
                 if (!userInstance?.length) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_FOUND,
-                                "USER CONTROLLER, GET USR WATCH HISTORY, user watch history doesn't exist.",
-                                [error.message],
-                                error.stack
+                                "USER CONTROLLER, GET USR WATCH HISTORY, user watch history doesn't exist."
                         );
                 }
 

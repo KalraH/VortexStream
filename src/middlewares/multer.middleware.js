@@ -28,9 +28,7 @@ export const upload = multer({
                 cb(
                         new ApiError(
                                 HTTP_STATUS.BAD_REQUEST,
-                                "MULTER, Only images are allowed",
-                                [error.message],
-                                error.stack
+                                "MULTER, Only images are allowed"
                         )
                 );
         },
