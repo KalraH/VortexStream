@@ -37,18 +37,18 @@ router.route("/login").post(loginUser);
 /** Secured Routes. */
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/logout").post(authMiddleware, logoutUser);
-router.route("/currentUser").get(authMiddleware, getCurrentUser);
-router.route("/watchHistory").get(authMiddleware, getUserWatchHistory);
-router.route("/reset-password").patch(authMiddleware, changeCurrentPassword);
-router.route("/update-userData").patch(authMiddleware, updateAccountDetails);
+router.route("/current").get(authMiddleware, getCurrentUser);
+router.route("/u/data").patch(authMiddleware, updateAccountDetails);
+router.route("/watch-history").get(authMiddleware, getUserWatchHistory);
+router.route("/u/reset-pass").patch(authMiddleware, changeCurrentPassword);
 
-router.route("/update-avatar").patch(
+router.route("/u/avatar").patch(
         authMiddleware,
         upload.single("avatar"),
         updateAvatar
 );
 
-router.route("/update-cover-img").patch(
+router.route("/u/cover-img").patch(
         authMiddleware,
         upload.single("coverImage"),
         updateCoverImage
