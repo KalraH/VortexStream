@@ -25,7 +25,7 @@ const createTweet = asyncHandler(async (req, res) => {
                         );
                 }
 
-                const tweetInstance = new Tweet.create({
+                const tweetInstance = await Tweet.create({
                         content,
                         owner: req?.user?._id,
                 });
@@ -88,7 +88,9 @@ const getUserTweets = asyncHandler(async (req, res) => {
                         // Getting All tweets with Owner as User of UserId
                         {
                                 $match: {
-                                        owner: Mongoose.Types.ObjectId(userId),
+                                        owner: new Mongoose.Types.ObjectId(
+                                                userId
+                                        ),
                                 },
                         },
                         // Getting Owner/User Details from User Model

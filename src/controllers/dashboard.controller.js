@@ -24,7 +24,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
                         // Getting All subscription models through channel where Subscriber is current user.
                         {
                                 $match: {
-                                        channel: Mongoose.Types.ObjectId(
+                                        channel: new Mongoose.Types.ObjectId(
                                                 userId
                                         ),
                                 },
@@ -44,7 +44,9 @@ const getChannelStats = asyncHandler(async (req, res) => {
                         // Get All videos where Owner is current channel's user.
                         {
                                 $match: {
-                                        owner: Mongoose.Types.ObjectId(userId),
+                                        owner: new Mongoose.Types.ObjectId(
+                                                userId
+                                        ),
                                 },
                         },
                         // Get all likes from Video model where $video has the _id of this video.
@@ -85,10 +87,10 @@ const getChannelStats = asyncHandler(async (req, res) => {
 
                 const channelStats = {
                         totalSubscribers:
-                                totalSubscribers[0].subscribersCount || 0,
-                        totalLikes: videoInstance[0].totalLikes || 0,
-                        totalViews: videoInstance[0].totalViews || 0,
-                        totalVideos: videoInstance[0].totalVideos || 0,
+                                totalSubscribers[0]?.subscribersCount || 0,
+                        totalLikes: videoInstance[0]?.totalLikes || 0,
+                        totalViews: videoInstance[0]?.totalViews || 0,
+                        totalVideos: videoInstance[0]?.totalVideos || 0,
                 };
 
                 if (!channelStats) {
@@ -136,7 +138,9 @@ const getChannelVideos = asyncHandler(async (req, res) => {
                         // Get All videos where Owner is current channel's user.
                         {
                                 $match: {
-                                        owner: Mongoose.Types.ObjectId(userId),
+                                        owner: new Mongoose.Types.ObjectId(
+                                                userId
+                                        ),
                                 },
                         },
                         // Get all likes from Video model where $video has the _id of this video.

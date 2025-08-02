@@ -1,4 +1,5 @@
 import multer from "multer";
+import ApiError from "../utils/ApiError.js";
 import { HTTP_STATUS } from "../constants.js";
 
 const storage = multer.diskStorage({
@@ -14,21 +15,31 @@ const storage = multer.diskStorage({
 
 export const upload = multer({
         storage,
-        limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+        limits: { fileSize: 50 * 1024 * 1024 },
         fileFilter: (req, file, cb) => {
-                const allowedTypes = /jpeg|jpg|png|gif/;
-                const extname = allowedTypes.test(file.mimetype);
-                const mimetype = allowedTypes.test(
-                        file.originalname.split(".").pop().toLowerCase()
-                );
+                const allowedExt = /jpeg|jpg|png|gif|mp4/;
+
+                const ext = file.originalname.split(".").pop().toLowerCase();
+
+                const extname = allowedExt.test(ext);
+
+                const allowedMimeTypes = [
+                        "image/jpeg",
+                        "image/jpg",
+                        "image/png",
+                        "image/gif",
+                        "video/mp4",
+                ];
+                const mimetype = allowedMimeTypes.includes(file.mimetype);
 
                 if (extname && mimetype) {
                         return cb(null, true);
                 }
+
                 cb(
                         new ApiError(
                                 HTTP_STATUS.BAD_REQUEST,
-                                "MULTER, Only images are allowed"
+                                "MULTER, Only images and MP4 videos are allowed"
                         )
                 );
         },

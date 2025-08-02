@@ -11,7 +11,7 @@ router.use(authMiddleware);
 
 /* Secured Routes. */
 router.route("/u/:subscriberId").get(getUserChannelSubscribers);
-router.route("/c/:channelId")
+router.route("/c/:subscriberId")
         .get(getSubscribedChannels)
         .post(toggleSubscription);
 

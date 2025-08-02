@@ -1,3 +1,4 @@
+import fs from "fs";
 import jwt from "jsonwebtoken";
 import Mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
@@ -59,10 +60,6 @@ const generateAccessRefreshToken = async (user) => {
 const registerUser = asyncHandler(async (req, res) => {
         try {
                 const { userName, email, password, fullName } = req.body;
-
-                // console.log("USER CONTROLLER,", "TESTING LOGGING START --------------------------------------------------------------");
-                // console.log(req.body);
-                // console.log("USER CONTROLLER,", "TESTING LOGGING END ----------------------------------------------------------------");
 
                 if (
                         [userName, email, password, fullName].some(
@@ -677,12 +674,12 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                         );
                 }
 
-                const userId = req?.user?._id;
+                const userId = new Mongoose.Types.ObjectId(req?.user?._id);
                 const channel = await User.aggregate([
                         // Finding User/Owner of this Channel
                         {
                                 $match: {
-                                        userName: userName?.toLowerCase(),
+                                        userName: userName,
                                 },
                         },
                         // Creating all documents for Subscribers of this channel { Getting No. of Users that have this channel subscribedTo }
@@ -714,13 +711,13 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                                         },
                                         isSubscribedFlag: {
                                                 $cond: {
-                                                        $if: {
+                                                        if: {
                                                                 $in: [
                                                                         userId,
                                                                         "$subscribers.subscriber",
                                                                 ],
                                                         },
-                                                        $then: true,
+                                                        then: true,
                                                         else: false,
                                                 },
                                         },
@@ -748,17 +745,13 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                         );
                 }
 
-                // console.log("USER CONTROLLER,", "TESTING LOGGING START --------------------------------------------------------------");
-                // console.log(channel);
-                // console.log("USER CONTROLLER,", "TESTING LOGGING END ----------------------------------------------------------------");
-
                 return res
                         .status(HTTP_STATUS.OK)
                         .json(
                                 new ApiResponse(
                                         HTTP_STATUS.OK,
-                                        `USER CONTROLLER, GET USR CHANNEL PROF, Channel ${channel.userName} Profile fetched successfully.`,
-                                        channel
+                                        `USER CONTROLLER, GET USR CHANNEL PROF, Channel ${channel[0]?.userName} Profile fetched successfully.`,
+                                        channel[0]
                                 )
                         );
         } catch (error) {

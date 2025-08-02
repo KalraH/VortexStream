@@ -1,6 +1,7 @@
 import ApiError from "../utils/ApiError.js";
 import { HTTP_STATUS } from "../constants.js";
 import { Like } from "../models/like.model.js";
+import { User } from "../models/user.model.js";
 import { Video } from "../models/video.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -38,7 +39,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
                                         index: "search-videos",
                                         text: {
                                                 query: query,
-                                                path: ["title", "desciption"],
+                                                path: ["title", "description"],
                                         },
                                 },
                         });
@@ -55,7 +56,9 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
                         pipeline.push({
                                 $match: {
-                                        owner: Mongoose.Types.ObjectId(userId),
+                                        owner: new Mongoose.Types.ObjectId(
+                                                userId
+                                        ),
                                 },
                         });
                 }
@@ -69,10 +72,11 @@ const getAllVideos = asyncHandler(async (req, res) => {
                         pipeline.push({
                                 $sort: {
                                         [sortBy]: sortType === "asc" ? 1 : -1,
+                                        _id: 1,
                                 },
                         });
                 } else {
-                        pipeline.push({ $sort: { updatedAt: -1 } });
+                        pipeline.push({ $sort: { updatedAt: -1, _id: 1 } });
                 }
 
                 pipeline.push(
@@ -98,23 +102,16 @@ const getAllVideos = asyncHandler(async (req, res) => {
                         }
                 );
 
-                const videoAggregate = await Video.aggregate(pipeline);
-                if (!videoAggregate) {
-                        throw new ApiError(
-                                HTTP_STATUS.INTERNAL_SERVER_ERROR,
-                                "VIDEO CONTROLLER, GET ALL, Error while collecting videos."
-                        );
-                }
-
                 const options = {
                         page: parseInt(page, 10),
                         limit: parseInt(limit, 10),
                 };
 
                 const collectedVideos = await Video.aggregatePaginate(
-                        videoAggregate,
+                        pipeline,
                         options
                 );
+
                 if (!collectedVideos) {
                         throw new ApiError(
                                 HTTP_STATUS.INTERNAL_SERVER_ERROR,
@@ -155,7 +152,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 const publishAVideo = asyncHandler(async (req, res) => {
         try {
                 const { title, description } = req.body;
-                const videoLocalPath = req.files?.video?.[0]?.path || null;
+                const videoLocalPath = req.files?.videoFile?.[0]?.path || null;
                 const thumbnailLocalPath =
                         req.files?.thumbnail?.[0]?.path || null;
 
@@ -172,6 +169,8 @@ const publishAVideo = asyncHandler(async (req, res) => {
                                         f.trim() === ""
                         )
                 ) {
+                        console.log(videoLocalPath);
+                        console.log(thumbnailLocalPath);
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
                                 "VIDEO CONTROLLER, PUBLISH, All fields are required (Title, Description, Video Path, Thumbnail Path) are needed."
@@ -274,12 +273,14 @@ const getVideoById = asyncHandler(async (req, res) => {
                         );
                 }
 
-                const userId = Mongoose.Types.ObjectId(req?.user?._id);
+                const userId = new Mongoose.Types.ObjectId(req?.user?._id);
                 const videoInstance = await Video.aggregate([
                         // Getting video doc with given ID
                         {
                                 $match: {
-                                        _id: Mongoose.Types.ObjectId(videoId),
+                                        _id: new Mongoose.Types.ObjectId(
+                                                videoId
+                                        ),
                                 },
                         },
                         // Getting likes of the video
@@ -426,6 +427,20 @@ const getVideoById = asyncHandler(async (req, res) => {
                                 "VIDEO CONTROLLER, GET, Video search failed."
                         );
                 }
+
+                // increment views if video fetched successfully
+                await Video.findByIdAndUpdate(videoId, {
+                        $inc: {
+                                views: 1,
+                        },
+                });
+
+                // add this video to user watch history
+                await User.findByIdAndUpdate(req.user?._id, {
+                        $addToSet: {
+                                watchHistory: videoId,
+                        },
+                });
 
                 return res
                         .status(HTTP_STATUS.OK)

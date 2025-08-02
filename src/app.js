@@ -54,7 +54,7 @@ app.use("/api/1/users", userRouter);
  * @route 	{base_url}/api/1/tweets
  * @access 	Private
  */
-app.use("/api/1/tweets", tweetRouter);
+app.use("/api/1/tweet", tweetRouter);
 
 /**
  * Subscription Routes.

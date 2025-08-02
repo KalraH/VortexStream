@@ -52,7 +52,9 @@ const getVideoComments = asyncHandler(async (req, res) => {
                         // Gather all comments for given Video-ID
                         {
                                 $match: {
-                                        video: Mongoose.Types.ObjectId(videoId),
+                                        video: new Mongoose.Types.ObjectId(
+                                                videoId
+                                        ),
                                 },
                         },
                         // Gather Comment Owner details

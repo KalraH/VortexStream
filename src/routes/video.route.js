@@ -11,7 +11,6 @@ import {
 } from "../controllers/video.controller.js";
 
 const router = Router();
-router.use(authMiddleware);
 
 /* Secured Routes. */
 router.route("/")
@@ -29,6 +28,8 @@ router.route("/")
                 ]),
                 publishAVideo
         );
+
+router.use(authMiddleware);
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
 router.route("/:videoId")

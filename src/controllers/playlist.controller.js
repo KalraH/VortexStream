@@ -96,7 +96,9 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
                         // Getting all playlist docs with owner as User with User-ID
                         {
                                 $match: {
-                                        owner: Mongoose.Types.ObjectId(userId),
+                                        owner: new Mongoose.Types.ObjectId(
+                                                userId
+                                        ),
                                 },
                         },
                         // Getting all videos of playlist
@@ -114,8 +116,8 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
                                         totalVideos: {
                                                 $size: "$videos",
                                         },
-                                        $totalViews: {
-                                                $sum: "videos.views",
+                                        totalViews: {
+                                                $sum: "$videos.views",
                                         },
                                 },
                         },
@@ -199,7 +201,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
                         // Getting playlist doc with given ID
                         {
                                 $match: {
-                                        _id: Mongoose.Types.ObjectId(
+                                        _id: new Mongoose.Types.ObjectId(
                                                 playlistId
                                         ),
                                 },

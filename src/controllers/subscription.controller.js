@@ -89,27 +89,27 @@ const toggleSubscription = asyncHandler(async (req, res) => {
  */
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
         try {
-                const { channelId } = req.params;
-                if (!channelId) {
+                let { subscriberId } = req.params;
+                if (!subscriberId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Channel-Id is required."
+                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Subscriber-Id is required."
                         );
                 }
 
-                if (!isValidObjectId(channelId)) {
+                if (!isValidObjectId(subscriberId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
-                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Channel ID Invalid."
+                                "SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Subscriber ID Invalid."
                         );
                 }
 
-                channelId = Mongoose.Types.ObjectId(channelId);
+                subscriberId = new Mongoose.Types.ObjectId(subscriberId);
                 const subscribers = await Subscription.aggregate([
                         // Getting all Subuscription docs where channels are channel-ID (User-IDs of users who have subscribed to this channel).
                         {
                                 $match: {
-                                        channel: channelId,
+                                        channel: subscriberId,
                                 },
                         },
                         // Getting Subscriber details from Users Schema
@@ -138,7 +138,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                                                                                 $cond: {
                                                                                         if: {
                                                                                                 $in: [
-                                                                                                        channelId,
+                                                                                                        subscriberId,
                                                                                                         "$subscribedToSubscriber.subscriber",
                                                                                                 ],
                                                                                         },
@@ -185,7 +185,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                         .json(
                                 new ApiResponse(
                                         HTTP_STATUS.OK,
-                                        `SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Channel ${req.params} Subscribers fetched successfully.`,
+                                        `SUBSCRIPTION CONTROLLER, GET USR CHANNEL SUBSCRIBERS, Channel ${subscriberId} Subscribers fetched successfully.`,
                                         subscribers
                                 )
                         );
@@ -231,7 +231,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                         // Getting all Subuscription docs where Subscriber/user are subscriber-ID (user (subscriberId) is the subscriber).
                         {
                                 $match: {
-                                        subsciber: Mongoose.Types.ObjectId(
+                                        subsciber: new Mongoose.Types.ObjectId(
                                                 subscriberId
                                         ),
                                 },

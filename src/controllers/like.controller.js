@@ -233,7 +233,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                         // Getting all videos Liked by User from likedBy
                         {
                                 $match: {
-                                        likedBy: Mongoose.Types.ObjectId(
+                                        likedBy: new Mongoose.Types.ObjectId(
                                                 userId
                                         ),
                                 },
@@ -248,10 +248,13 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                                         pipeline: [
                                                 // Find owners of the Liked Videos
                                                 {
-                                                        from: "users",
-                                                        localField: "owner",
-                                                        foreignField: "_id",
-                                                        as: "owner",
+                                                        $lookup: {
+                                                                from: "users",
+                                                                localField: "owner",
+                                                                foreignField:
+                                                                        "_id",
+                                                                as: "owner",
+                                                        },
                                                 },
                                                 // Flattening the owner field's data which arrived in an array via lookup
                                                 {
@@ -273,28 +276,30 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                         // Sort the videos based on Latest Updated/Created
                         {
                                 $sort: {
-                                        updatedAt: -1,
+                                        "likedVideo.updatedAt": -1,
                                 },
                         },
                         // Collect final data to-be sent
                         {
                                 $project: {
                                         _id: 0,
-                                        likedVideos: {
-                                                title: 1,
-                                                description: 1,
-                                                views: 1,
-                                                isPublished: 1,
-                                                "videoFile.secure_url": 1,
-                                                "thumbnail.secure_url": 1,
-                                                duration: 1,
-                                                createdAt: 1,
-                                                updatedAt: 1,
-                                                owner: {
-                                                        userName: 1,
-                                                        fullName: 1,
-                                                        "avatar.secure_url": 1,
-                                                },
+                                        videoId: "$likedVideo._id",
+                                        title: "$likedVideo.title",
+                                        description: "$likedVideo.description",
+                                        views: "$likedVideo.views",
+                                        isPublished: "$likedVideo.isPublished",
+                                        "videoFile.secure_url":
+                                                "$likedVideo.videoFile.secure_url",
+                                        "thumbnail.secure_url":
+                                                "$likedVideo.thumbnail.secure_url",
+                                        duration: "$likedVideo.duration",
+                                        createdAt: "$likedVideo.createdAt",
+                                        updatedAt: "$likedVideo.updatedAt",
+                                        owner: {
+                                                userName: "$likedVideo.owner.userName",
+                                                fullName: "$likedVideo.owner.fullName",
+                                                "avatar.secure_url":
+                                                        "$likedVideo.owner.avatar.secure_url",
                                         },
                                 },
                         },
