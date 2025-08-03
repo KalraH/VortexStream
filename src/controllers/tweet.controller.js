@@ -239,7 +239,6 @@ const updateTweet = asyncHandler(async (req, res) => {
                         );
                 }
 
-                // Print and validate below fields before testing
                 if (
                         tweetInstance?.owner.toString() !==
                         req?.user?._id.toString()
@@ -317,7 +316,6 @@ const deleteTweet = asyncHandler(async (req, res) => {
                         );
                 }
 
-                // Print and validate below fields before testing
                 if (
                         tweetInstance?.owner.toString() !==
                         req?.user?._id.toString()

@@ -7,7 +7,7 @@ import { Subscription } from "../models/subscription.model.js";
 
 /**
  * Informing regarding Togglling Subscription Icon for users.
- * @route 	POST /c/:channelId
+ * @route 	POST /c/:subscriberId
  * @access 	Private
  *
  * @param 	{Object} req - The request object containing channel-ID (Technically User-ID as channel is also a user) in params.
@@ -17,15 +17,15 @@ import { Subscription } from "../models/subscription.model.js";
  */
 const toggleSubscription = asyncHandler(async (req, res) => {
         try {
-                const { channelId } = req.params;
-                if (!channelId) {
+                const { subscriberId } = req.params;
+                if (!subscriberId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
                                 "SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel-Id is required."
                         );
                 }
 
-                if (!isValidObjectId(channelId)) {
+                if (!isValidObjectId(subscriberId)) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
                                 "SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel ID Invalid."
@@ -33,8 +33,8 @@ const toggleSubscription = asyncHandler(async (req, res) => {
                 }
 
                 const subscriptionInstance = await Subscription.findOne({
-                        subsciber: req?.user?._id,
-                        channel: channelId,
+                        subscriber: req?.user?._id,
+                        channel: subscriberId,
                 });
                 if (subscriptionInstance) {
                         await Subscription.findByIdAndDelete(
@@ -46,15 +46,15 @@ const toggleSubscription = asyncHandler(async (req, res) => {
                                 .json(
                                         new ApiResponse(
                                                 HTTP_STATUS.OK,
-                                                `SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel ${channelId} Un-Subscribed successfully.`,
+                                                `SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel ${subscriberId} Un-Subscribed successfully.`,
                                                 { isSubscribed: false }
                                         )
                                 );
                 }
 
                 await Subscription.create({
-                        subsciber: req?.user?._id,
-                        channel: channelId,
+                        subscriber: req?.user?._id,
+                        channel: subscriberId,
                 });
 
                 return res
@@ -62,7 +62,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
                         .json(
                                 new ApiResponse(
                                         HTTP_STATUS.CREATED,
-                                        `SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel ${channelId} Subscribed successfully.`,
+                                        `SUBSCRIPTION CONTROLLER, TOGGLE SUBSCRIPTION, Channel ${subscriberId} Subscribed successfully.`,
                                         { isSubscribed: true }
                                 )
                         );
@@ -163,7 +163,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
                         {
                                 $project: {
                                         _id: 0,
-                                        subsciber: {
+                                        subscriber: {
                                                 userName: 1,
                                                 fullName: 1,
                                                 "avatar.secured_url": 1,
@@ -231,7 +231,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                         // Getting all Subuscription docs where Subscriber/user are subscriber-ID (user (subscriberId) is the subscriber).
                         {
                                 $match: {
-                                        subsciber: new Mongoose.Types.ObjectId(
+                                        subscriber: new Mongoose.Types.ObjectId(
                                                 subscriberId
                                         ),
                                 },
@@ -274,13 +274,14 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
                                 $project: {
                                         _id: 0,
                                         subscribedChannel: {
+                                                _id: 1,
                                                 userName: 1,
                                                 fullName: 1,
-                                                "avatar.secued_url": 1,
+                                                "avatar.secure_url": 1,
                                                 createdAt: 1,
-                                                latestVideo: {
-                                                        "videoFile.secued_url": 1,
-                                                        "thumbnail.secued_url": 1,
+                                                lastVideo: {
+                                                        "videoFile.secure_url": 1,
+                                                        "thumbnail.secure_url": 1,
                                                         description: 1,
                                                         title: 1,
                                                         duration: 1,

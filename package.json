@@ -32,6 +32,7 @@
         },
         "homepage": "https://github.com/KalraH/VortexStream#readme",
         "devDependencies": {
+                "@types/node": "^24.1.0",
                 "nodemon": "^3.1.10",
                 "prettier": "^3.6.2"
         },

@@ -169,8 +169,6 @@ const publishAVideo = asyncHandler(async (req, res) => {
                                         f.trim() === ""
                         )
                 ) {
-                        console.log(videoLocalPath);
-                        console.log(thumbnailLocalPath);
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
                                 "VIDEO CONTROLLER, PUBLISH, All fields are required (Title, Description, Video Path, Thumbnail Path) are needed."
@@ -448,7 +446,7 @@ const getVideoById = asyncHandler(async (req, res) => {
                                 new ApiResponse(
                                         HTTP_STATUS.OK,
                                         `VIDEO CONTROLLER, GET, Video with ID ${videoId} fetched successfully.`,
-                                        videoInstance
+                                        videoInstance[0]
                                 )
                         );
         } catch (error) {

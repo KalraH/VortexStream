@@ -19,10 +19,6 @@ const connectToDatabase = async () => {
                         "DB CONFIG,",
                         `DB Port: ${connectionInstance.connection.port} | Host: ${connectionInstance.connection.host}`
                 );
-
-                // console.log("DB CONFIG,", "TESTING LOGGING START --------------------------------------------------------------");
-                // console.log(connectionInstance);
-                // console.log("DB CONFIG,", "TESTING LOGGING END ----------------------------------------------------------------");
         } catch (error) {
                 console.error("DB CONFIG,", "MONGODB connection error:", error);
                 process.exit(1);

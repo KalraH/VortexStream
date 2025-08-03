@@ -22,10 +22,6 @@ const getVideoComments = asyncHandler(async (req, res) => {
                 const { videoId } = req.params;
                 const { page = 1, limit = 10 } = req.query;
 
-                // console.log("COMMENT CONTROLLER,", "TESTING LOGGING START --------------------------------------------------------------");
-                // console.log(req.query);
-                // console.log("COMMENT CONTROLLER,", "TESTING LOGGING END ----------------------------------------------------------------");
-
                 if (!videoId) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
@@ -48,7 +44,8 @@ const getVideoComments = asyncHandler(async (req, res) => {
                         );
                 }
 
-                const videoComments = await Comment.aggregate([
+                const userId = new Mongoose.Types.ObjectId(req?.user?._id);
+                const pipeline = [
                         // Gather all comments for given Video-ID
                         {
                                 $match: {
@@ -83,7 +80,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
                                         isLiked: {
                                                 $cond: {
                                                         if: [
-                                                                req?.user?._id,
+                                                                userId,
                                                                 "$likes.likedBy",
                                                         ],
                                                         then: true,
@@ -100,17 +97,17 @@ const getVideoComments = asyncHandler(async (req, res) => {
                                 $project: {
                                         content: 1,
                                         createdAt: 1,
-                                        upadtedAt: 1,
+                                        updatedAt: 1,
                                         owner: {
                                                 userName: 1,
                                                 fullName: 1,
-                                                "avatar.secured_url": 1,
+                                                "avatar.secure_url": 1,
                                         },
                                         likesCount: 1,
                                         isLiked: 1,
                                 },
                         },
-                ]);
+                ];
 
                 const options = {
                         page: parseInt(page, 10),
@@ -118,7 +115,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
                 };
 
                 const commentsAggegate = await Comment.aggregatePaginate(
-                        videoComments,
+                        pipeline,
                         options
                 );
 
@@ -161,17 +158,10 @@ const getVideoComments = asyncHandler(async (req, res) => {
  */
 const addComment = asyncHandler(async (req, res) => {
         try {
-                const videoId = req?.params;
+                const { videoId } = req?.params;
                 const { content } = req?.body;
 
-                if (
-                        [videoId, content].some(
-                                (field) =>
-                                        !field ||
-                                        typeof field !== "string" ||
-                                        field.trim() === ""
-                        )
-                ) {
+                if (!videoId || !content) {
                         throw new ApiError(
                                 HTTP_STATUS.NOT_ACCEPTABLE,
                                 "COMMENT CONTROLLER, ADD COMMENT, Both  video-ID and comment content are required."
@@ -193,10 +183,11 @@ const addComment = asyncHandler(async (req, res) => {
                         );
                 }
 
+                const userId = new Mongoose.Types.ObjectId(req?.user?.id);
                 const newCommentInstance = await Comment.create({
                         content,
                         video: videoInstance._id,
-                        owner: req?.user?.id,
+                        owner: userId,
                 });
 
                 if (!newCommentInstance) {
@@ -206,13 +197,81 @@ const addComment = asyncHandler(async (req, res) => {
                         );
                 }
 
+                // Populate the owner field with full user data (similar to your aggregation)
+                const populatedComment = await Comment.findById(
+                        newCommentInstance._id
+                )
+                        .populate({
+                                path: "owner",
+                                select: "userName fullName avatar",
+                        })
+                        .populate({
+                                path: "video",
+                                select: "title",
+                        });
+
+                // Add likes data (similar to your aggregation pipeline)
+                const commentWithLikes = await Comment.aggregate([
+                        { $match: { _id: newCommentInstance._id } },
+                        {
+                                $lookup: {
+                                        from: "likes",
+                                        localField: "_id",
+                                        foreignField: "comment",
+                                        as: "likes",
+                                },
+                        },
+                        {
+                                $lookup: {
+                                        from: "users",
+                                        localField: "owner",
+                                        foreignField: "_id",
+                                        as: "owner",
+                                },
+                        },
+                        {
+                                $addFields: {
+                                        likesCount: { $size: "$likes" },
+                                        owner: { $first: "$owner" },
+                                        isLiked: {
+                                                $cond: {
+                                                        if: {
+                                                                $in: [
+                                                                        new Mongoose.Types.ObjectId(
+                                                                                userId
+                                                                        ),
+                                                                        "$likes.likedBy",
+                                                                ],
+                                                        },
+                                                        then: true,
+                                                        else: false,
+                                                },
+                                        },
+                                },
+                        },
+                        {
+                                $project: {
+                                        content: 1,
+                                        createdAt: 1,
+                                        updatedAt: 1,
+                                        owner: {
+                                                userName: 1,
+                                                fullName: 1,
+                                                "avatar.secure_url": 1,
+                                        },
+                                        likesCount: 1,
+                                        isLiked: 1,
+                                },
+                        },
+                ]);
+
                 return res
                         .status(HTTP_STATUS.OK)
                         .json(
                                 new ApiResponse(
                                         HTTP_STATUS.CREATED,
                                         `COMMENT CONTROLLER, ADD COMMENT, User ${req?.user?._id} comment created successfully on video ${videoId}.`,
-                                        newCommentInstance
+                                        commentWithLikes[0]
                                 )
                         );
         } catch (error) {

@@ -86,10 +86,6 @@ const registerUser = asyncHandler(async (req, res) => {
                         );
                 }
 
-                // console.log("USER CONTROLLER,", "TESTING LOGGING START --------------------------------------------------------------");
-                // console.log(existingUser);
-                // console.log("USER CONTROLLER,", "TESTING LOGGING END ----------------------------------------------------------------");
-
                 const avatarLocalPath = req.files?.avatar?.[0]?.path || null;
                 const coverImageLocalPath =
                         req.files?.coverImage?.[0]?.path || null;
@@ -829,10 +825,6 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
                                 "USER CONTROLLER, GET USR WATCH HISTORY, user watch history doesn't exist."
                         );
                 }
-
-                // console.log("USER CONTROLLER,", "TESTING LOGGING START --------------------------------------------------------------");
-                // console.log(userInstance);
-                // console.log("USER CONTROLLER,", "TESTING LOGGING END ----------------------------------------------------------------");
 
                 return res
                         .status(HTTP_STATUS.OK)

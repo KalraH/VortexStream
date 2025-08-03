@@ -244,7 +244,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                                         from: "videos",
                                         localField: "video",
                                         foreignField: "_id",
-                                        as: "likedVideos",
+                                        as: "likedVideo",
                                         pipeline: [
                                                 // Find owners of the Liked Videos
                                                 {
@@ -269,8 +269,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
                         // Flattening the liked Videos field's data which arrived in an array via lookup (Alternate of $addFields)
                         {
                                 $unwind: {
-                                        path: "$likedVideos",
-                                        preserveNullAndEmptyArrays: true,
+                                        path: "$likedVideo",
                                 },
                         },
                         // Sort the videos based on Latest Updated/Created
