@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { CONSTANTS } from "./constants.js";
+import connectToDatabase from "./config/dbConfig.js";
 
 import likeRouter from "./routes/like.route.js";
 import userRouter from "./routes/user.route.js";
@@ -15,6 +16,9 @@ import subscriptionRouter from "./routes/subscription.route.js";
 
 /* Initialize the Express application */
 const app = express();
+
+/* Conecting to DB server. */
+await connectToDatabase().catch(console.error);
 
 /* Middleware to parse JSON and URL-encoded data */
 app.use(
