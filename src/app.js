@@ -10,6 +10,7 @@ import videoRouter from "./routes/video.route.js";
 import commentRouter from "./routes/comment.route.js";
 import playlistRouter from "./routes/playlist.route.js";
 import dashboardRouter from "./routes/dashboard.route.js";
+import healthcheckRouter from "./routes/healthCheck.route.js";
 import subscriptionRouter from "./routes/subscription.route.js";
 
 /* Initialize the Express application */
@@ -42,6 +43,13 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 /* Defining All Routes. */
+/**
+ * Health Check Route.
+ * @route 	{base_url}/api/1/healthCheck
+ * @access 	Public
+ */
+app.use("/api/1/healthCheck", healthcheckRouter);
+
 /**
  * User Routes.
  * @route 	{base_url}/api/1/users
