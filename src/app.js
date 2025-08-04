@@ -20,7 +20,7 @@ app.use(
         cors({
                 origin:
                         process.env.CORS_ORIGIN ||
-                        `http://localhost:${process.env.PORT || 5000}`,
+                        `http://localhost:${process.env.PORT || 5173}`,
                 credentials: true,
         })
 );
@@ -98,4 +98,4 @@ app.use("/api/1/playlist", playlistRouter);
  */
 app.use("/api/1/dashboard", dashboardRouter);
 
-export { app };
+export default app;
