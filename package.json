@@ -5,8 +5,8 @@
         "main": "index.js",
         "type": "module",
         "scripts": {
-                "dev": "nodemon -r dotenv/config src/index.js",
-                "start": "node src/index.js",
+                "dev": "nodemon -r dotenv/config src/dev.js",
+                "start": "node src/dev.js",
                 "test": "echo \"Error: no test specified\" && exit 1"
         },
         "repository": {
