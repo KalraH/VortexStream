@@ -20,27 +20,30 @@ const app = express();
 /* Conecting to DB server. */
 await connectToDatabase().catch(console.error);
 
+/* Setting CORS origin. */
+const corsOrigins = process.env.CORS_ORIGIN
+	? process.env.CORS_ORIGIN.split(',')
+	: [`http://localhost:${process.env.PORT || 5173}`];
+
+app.use(
+	cors({
+		origin: corsOrigins,
+		credentials: true,
+	})
+);
+
 /* Middleware to parse JSON and URL-encoded data */
 app.use(
-        cors({
-                origin:
-                        process.env.CORS_ORIGIN ||
-                        `http://localhost:${process.env.PORT || 5173}`,
-                credentials: true,
-        })
+	express.json({
+		limit: CONSTANTS.JSON_LIMIT,
+	})
 );
 
 app.use(
-        express.json({
-                limit: CONSTANTS.JSON_LIMIT,
-        })
-);
-
-app.use(
-        express.urlencoded({
-                limit: CONSTANTS.JSON_LIMIT,
-                extended: true,
-        })
+	express.urlencoded({
+		limit: CONSTANTS.JSON_LIMIT,
+		extended: true,
+	})
 );
 
 app.use(express.static("public"));
