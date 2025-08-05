@@ -19,6 +19,7 @@ A dynamic media platform where content (videos, likes, comments, subscriptions) 
 [![Cookie-parser](https://img.shields.io/badge/Cookie--parser-4CAF50?style=for-the-badge&logo=javascript&logoColor=white)](https://www.npmjs.com/package/cookie-parser)
 [![Mongoose Aggregate Paginate](https://img.shields.io/badge/Mongoose--Aggregate--Paginate-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.npmjs.com/package/mongoose-aggregate-paginate-v2)
 [![Multer](https://img.shields.io/badge/Multer-FF9800?style=for-the-badge&logo=javascript&logoColor=white)](https://www.npmjs.com/package/multer)
+[![MERN Stack](https://img.shields.io/badge/MERN-Stack-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://www.mongodb.com/mern-stack)
 
 ## 🔧 Tech Stack
 
