@@ -4,7 +4,7 @@ import { HTTP_STATUS } from "../constants.js";
 
 const storage = multer.diskStorage({
         destination: (req, file, cb) => {
-                cb(null, "./public/temp");
+                cb(null, "./tmp");
         },
         filename: (req, file, cb) => {
                 const uniqueSuffix =
