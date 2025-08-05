@@ -12,24 +12,25 @@ import {
 
 const router = Router();
 
-/* Secured Routes. */
-router.route("/")
-        .get(getAllVideos)
-        .post(
-                upload.fields([
-                        {
-                                name: "videoFile",
-                                maxCount: 1,
-                        },
-                        {
-                                name: "thumbnail",
-                                maxCount: 1,
-                        },
-                ]),
-                publishAVideo
-        );
+/* Un-secured Routes. */
+router.route("/").get(getAllVideos);
 
+/* Secured Routes. */
 router.use(authMiddleware);
+
+router.route("/").post(
+        upload.fields([
+                {
+                        name: "videoFile",
+                        maxCount: 1,
+                },
+                {
+                        name: "thumbnail",
+                        maxCount: 1,
+                },
+        ]),
+        publishAVideo
+);
 
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
 router.route("/:videoId")
