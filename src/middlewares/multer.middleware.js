@@ -1,10 +1,11 @@
+import os from "os";
 import multer from "multer";
 import ApiError from "../utils/ApiError.js";
 import { HTTP_STATUS } from "../constants.js";
 
 const storage = multer.diskStorage({
         destination: (req, file, cb) => {
-                cb(null, "./tmp");
+                cb(null, os.tmpdir());
         },
         filename: (req, file, cb) => {
                 const uniqueSuffix =
