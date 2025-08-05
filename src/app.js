@@ -25,6 +25,10 @@ const corsOrigins = process.env.CORS_ORIGIN
 	? process.env.CORS_ORIGIN.split(',')
 	: [`http://localhost:${process.env.PORT || 5173}`];
 
+console.log('Raw CORS_ORIGIN env:', process.env.CORS_ORIGIN);
+console.log('Type of CORS_ORIGIN:', typeof process.env.CORS_ORIGIN);
+console.log('Parsed corsOrigins:', corsOrigins);
+
 app.use(
 	cors({
 		origin: corsOrigins,
