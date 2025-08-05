@@ -52,7 +52,7 @@ app.use(cookieParser());
 /* Defining All Routes. */
 /**
  * Health Check Route.
- * @route 	{base_url}/api/1/healthCheck
+ * @route 	{base_url}/
  * @access 	Public
  */
 app.use("/", healthcheckRouter);
