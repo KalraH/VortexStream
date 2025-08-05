@@ -40,4 +40,5 @@ export const COOKIE_OPTIONS = {
         expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
         httpOnly: true,
         secure: true,
+	sameSite: 'None',
 };
