@@ -55,7 +55,7 @@ app.use(cookieParser());
  * @route 	{base_url}/api/1/healthCheck
  * @access 	Public
  */
-app.use("/api/1/healthCheck", healthcheckRouter);
+app.use("/", healthcheckRouter);
 
 /**
  * User Routes.
